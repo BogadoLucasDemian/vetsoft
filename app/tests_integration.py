@@ -109,7 +109,7 @@ class TestIntegration(TestCase):
                 "type": "antibiotico",
                 "price": "",
             },
-            follow=True  # Permite seguir redirecciones
+            follow=True,  # Permite seguir redirecciones
         )
 
         self.assertContains(response, "Por favor ingrese un precio")
@@ -121,7 +121,7 @@ class TestIntegration(TestCase):
         response = self.client.post(reverse('products_form'), {
             "name": "ampicilina",
             "type": "antibiotico",
-            "price": "10"  # Precio mayor a 0, debería ser válido
+            "price": "10",  # Precio mayor a 0, debería ser válido
         })
 
         # Verifica que la solicitud haya sido exitosa (se espera un redirect)
@@ -138,7 +138,7 @@ class TestIntegration(TestCase):
                 "type": "antibiotico",
                 "price": "",
             },
-            follow=True
+            follow=True,
         )
 
         # Verifica que el formulario devuelva un error de precio vacío
@@ -154,7 +154,7 @@ class TestIntegration(TestCase):
                 "type": "antibiotico",
                 "price": "0",
             },
-            follow=True
+            follow=True,
         )
 
         # Verifica que el formulario devuelva un error de precio cero
@@ -169,7 +169,7 @@ class TestIntegration(TestCase):
                 "name": "ampicilina",
                 "type": "antibiotico",
                 "price": "-10",
-            }
+            },
         )
 
         # self.assertEqual(response.status_code, 400)
@@ -178,20 +178,6 @@ class TestIntegration(TestCase):
         self.assertContains(response, "Por favor ingrese un precio mayor a cero")
         # Verifica que el producto no haya sido creado en la base de datos
         self.assertFalse(Product.objects.filter(name="ampicilina").exists())
-
-    def test_valid_product_price(self):
-        response = self.client.post(reverse('products_form'), {
-            "name": "ampicilina",
-            "type": "antibiotico",
-            "price": "10"  # Precio mayor a 0, debería ser válido
-        })
-
-        # Verifica que la solicitud haya sido exitosa (se espera un redirect)
-        self.assertEqual(response.status_code, 302)
-
-        # Verifica que el producto haya sido creado en la base de datos
-        self.assertTrue(Product.objects.filter(name="ampicilina").exists())
-
 
 class PetsTest(TestCase):
     def test_repo_use_repo_template(self):
@@ -257,7 +243,7 @@ class PetsTest(TestCase):
         pet = Pet.objects.create(
             name="gatito",
             breed="orange",
-            birthday="2024-05-18"
+            birthday="2024-05-18",
         )
         response = self.client.post(
             reverse("pets_form"),
@@ -278,7 +264,7 @@ class PetsTest(TestCase):
         pet = Pet.objects.create(
             name="gatito",
             breed="orange",
-            birthday="2024-05-18"
+            birthday="2024-05-18",
         )
         response = self.client.post(
             reverse("pets_form"),
@@ -296,7 +282,7 @@ class PetsTest(TestCase):
         pet = Pet.objects.create(
             name="gatito",
             breed="orange",
-            birthday="2024-05-18"
+            birthday="2024-05-18",
         )
         date_now = datetime.date.today().strftime("%Y-%m-%d")
         response = self.client.post(
@@ -313,7 +299,7 @@ class PetsTest(TestCase):
         pet = Pet.objects.create(
             name="gatito",
             breed="orange",
-            birthday="2024-05-18"
+            birthday="2024-05-18",
         )
         date_now = datetime.date.today()
         date_later = date_now + datetime.timedelta(days=1)
@@ -430,7 +416,7 @@ class VetsTest(TestCase):
             "name": "Juan Sebastian Veron",
             "email": "brujita75@hotmail.com",
             "phone": "221555232",
-            "speciality": "Urgencias"
+            "speciality": "Urgencias",
         })
 
         self.assertEqual(response.status_code, 302)
@@ -442,7 +428,7 @@ class VetsTest(TestCase):
             name="Juan Sebastian Veron",
             email= "brujita75@hotmail.com",
             phone= "221555232",
-            speciality= "Urgencias"
+            speciality= "Urgencias",
         )
         response = self.client.post(
             reverse("vets_form"),
@@ -451,7 +437,7 @@ class VetsTest(TestCase):
                 "name": "Juan Sebastian Veron",
                 "email": "brujita75@hotmail.com",
                 "phone": "221555232",
-                "speciality": ""
+                "speciality": "",
             },
         )
 
@@ -477,7 +463,7 @@ class ProvidersTest(TestCase):
             data = {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123"
+                "address":"Calle falsa 123",
             },
         )
 
@@ -493,7 +479,7 @@ class ProvidersTest(TestCase):
     def test_validation_errors_when_create_provider(self):
         response = self.client.post(
             reverse("providers_form"),
-            data={}
+            data={},
         )
 
         self.assertContains(response, "Por favor ingrese un nombre")
@@ -510,8 +496,8 @@ class ProvidersTest(TestCase):
             data={
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":""
-            }
+                "address":"",
+            },
         )
 
         self.assertContains(response, "Por favor ingrese una dirección")
@@ -520,7 +506,7 @@ class ProvidersTest(TestCase):
         provider = Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            address="Calle falsa 123"
+            address="Calle falsa 123",
         )
 
         response = self.client.post(
@@ -529,8 +515,8 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":provider.name,
                 "email":provider.email,
-                "address":"Avenida Siempreviva 742"
-            }
+                "address":"Avenida Siempreviva 742",
+            },
         )
 
         self.assertEqual(response.status_code, 302)
@@ -539,7 +525,7 @@ class ProvidersTest(TestCase):
         provider=Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            address="Calle falsa 123"
+            address="Calle falsa 123",
         )
 
         response = self.client.post(
@@ -548,8 +534,8 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":"",
                 "email":"",
-                "address":""
-            }
+                "address":"",
+            },
         )
 
         self.assertContains(response, "Por favor ingrese un nombre")
@@ -560,7 +546,7 @@ class ProvidersTest(TestCase):
         provider=Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            address="Calle falsa 123"
+            address="Calle falsa 123",
         )
 
         response = self.client.post(
@@ -569,8 +555,8 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":provider.name,
                 "email":provider.email,
-                "address":""
-            }
+                "address":"",
+            },
         )
 
         self.assertContains(response, "Por favor ingrese una dirección")
@@ -594,7 +580,7 @@ class MedicinesTest(TestCase):
             data={
                 "name": "Rostrum",
                 "description": "Antibacteriano",
-                "dose": "2"
+                "dose": "2",
             },
         )
         medicines = Medicine.objects.all()

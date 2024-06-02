@@ -89,7 +89,7 @@ DATABASES = {
     "default": {
         "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.sqlite3"),
         "NAME": os.getenv("DB_NAME", str(BASE_DIR / "db.sqlite3")),
-    }
+    },
 }
 
 

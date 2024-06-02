@@ -49,7 +49,7 @@ def validate_medicine(data):
     name = data.get("name", "")
     description = data.get("description", "")
     dose = data.get("dose")
-    if not dose is None:
+    if dose is not None:
         try:
             num = int(dose)
         except ValueError:
@@ -197,7 +197,7 @@ class Provider (models.Model):
         Provider.objects.create(
             name=provider_data.get("name"),
             email=provider_data.get("email"),
-            address=provider_data.get("address")
+            address=provider_data.get("address"),
         )
 
         return True, None
