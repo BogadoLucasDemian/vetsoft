@@ -31,7 +31,7 @@ class ClientModelTest(TestCase):
                 "phone": "221555232",
                 "address": "13 y 44",
                 "email": "brujita75@hotmail.com",
-            }
+            },
         )
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
@@ -49,7 +49,7 @@ class ClientModelTest(TestCase):
                 "phone": "221555232",
                 "address": "13 y 44",
                 "email": "brujita75@hotmail.com",
-            }
+            },
         )
         client = Client.objects.get(pk=1)
 
@@ -80,7 +80,7 @@ class ClientModelTest(TestCase):
                 "phone": "221555232",
                 "address": "13 y 44",
                 "email": "brujita75@hotmail.com",
-            }
+            },
         )
         client = Client.objects.get(pk=1)
 
@@ -103,7 +103,7 @@ class TestValidateProduct(TestCase):
         data = {
             "name": "ampicilina",
             "type": "antibiotico",
-            "price": "100"
+            "price": "100",
         }
         errors = validate_product(data)
         self.assertNotIn("price", errors)
@@ -113,7 +113,7 @@ class TestValidateProduct(TestCase):
         data = {
             "name": "ampicilina",
             "type": "antibiotico",
-            "price": "0"
+            "price": "0",
         }
         errors = validate_product(data)
         self.assertIn("price", errors)
@@ -124,7 +124,7 @@ class TestValidateProduct(TestCase):
         data = {
             "name": "ampicilina",
             "type": "antibiotico",
-            "price": ""
+            "price": "",
         }
         errors = validate_product(data)
         self.assertIn("price", errors)
@@ -135,7 +135,7 @@ class TestValidateProduct(TestCase):
         data = {
             "name": "ampicilina",
             "type": "antibiotico",
-            "price": "-10"
+            "price": "-10",
         }
         errors = validate_product(data)
         self.assertIn("price", errors)
@@ -148,7 +148,7 @@ class TestValidateProduct(TestCase):
                 "name": "ampicilina",
                 "type": "antibiotico",
                 "price": "10",
-            }
+            },
         )
         product = Product.objects.get(pk=1)
         
@@ -170,7 +170,7 @@ class TestValidateProduct(TestCase):
                 "name": "ampicilina",
                 "type": "antibiotico",
                 "price": "10",
-            }
+            },
         )
         product = Product.objects.get(pk=1)
         
@@ -231,7 +231,7 @@ class PetModelTest(TestCase):
                 "name": "gatito",
                 "breed": "orange",
                 "birthday": "2024-05-18",
-            }
+            },
         )
         pets = Pet.objects.all()
         self.assertEqual(len(pets), 1)
@@ -243,7 +243,7 @@ class PetModelTest(TestCase):
                 "name": "gatito",
                 "breed": "orange",
                 "birthday": "2024-05-18",
-            }
+            },
         )
         pet = Pet.objects.get(pk=1)
         
@@ -264,7 +264,7 @@ class PetModelTest(TestCase):
                 "name": "gatito",
                 "breed": "orange",
                 "birthday": "2024-05-18",
-            }
+            },
         )
         pet = Pet.objects.get(pk=1)
         
@@ -351,7 +351,7 @@ class VetModelTest(TestCase):
                 "email": "brujita75@hotmail.com",
                 "phone": "221555232",
                 "speciality": speciality,
-            }
+            },
         )
         
         vets = Vet.objects.all()
@@ -375,7 +375,7 @@ class VetModelTest(TestCase):
                 "email": "brujita75@hotmail.com",
                 "phone": "221555232",
                 "speciality": "Urgencias",
-            }
+            },
         )
         
         vet = Vet.objects.get(pk=1)
@@ -406,7 +406,7 @@ class VetModelTest(TestCase):
                 "email": "brujita75@hotmail.com",
                 "phone": "221555232",
                 "speciality": "Urgencias",
-            }
+            },
         )
         
         vet = Vet.objects.get(pk=1)
@@ -454,8 +454,8 @@ class ProviderModelTest(TestCase):
             {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123"
-            }
+                "address":"Calle falsa 123",
+            },
         )
 
         providers = Provider.objects.all()
@@ -466,7 +466,7 @@ class ProviderModelTest(TestCase):
         provider_data = {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":""
+                "address":"",
             }
 
         result = validate_provider(provider_data)
@@ -478,7 +478,7 @@ class ProviderModelTest(TestCase):
         provider_data = {
             "name":"Demian",
             "email":"demian@utn.com",
-            "address":"Calle falsa 123"
+            "address":"Calle falsa 123",
         }
 
         result = validate_provider(provider_data)
@@ -490,7 +490,7 @@ class ProviderModelTest(TestCase):
         provider_data = {
             "name":"",
             "email":"",
-            "address":""
+            "address":"",
         }
 
         result = validate_provider(provider_data)
@@ -504,8 +504,8 @@ class ProviderModelTest(TestCase):
             {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123"
-            }
+                "address":"Calle falsa 123",
+            },
         )
 
         provider = Provider.objects.get(pk=1)
@@ -515,7 +515,7 @@ class ProviderModelTest(TestCase):
         provider.update_provider({
             "name":provider.name,
             "email":provider.email,
-            "address":"Avenida Siempreviva 742"
+            "address":"Avenida Siempreviva 742",
         })
 
         updated_provider = Provider.objects.get(pk=1)
@@ -528,8 +528,8 @@ class ProviderModelTest(TestCase):
             {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123"
-            }
+                "address":"Calle falsa 123",
+            },
         )
 
         provider = Provider.objects.get(pk=1)
@@ -537,7 +537,7 @@ class ProviderModelTest(TestCase):
         provider.update_provider({
             "name":provider.name,
             "email":provider.email,
-            "address":""
+            "address":"",
         })
 
         updated_provider = Provider.objects.get(pk=1)
@@ -557,7 +557,7 @@ class MedicineModelTest(TestCase):
                 "name": "Meloxicam",
                 "description": "Antiinflamatorio y analgesico",
                 "dose": "2",
-            }
+            },
         )
         medicines = Medicine.objects.all()
         self.assertEqual(len(medicines), 1)
@@ -573,7 +573,7 @@ class MedicineModelTest(TestCase):
                 "name": "Meloxicam",
                 "description": "Antiinflamatorio y analgesico",
                 "dose": "2",
-            }
+            },
         )
         medicine = Medicine.objects.get(pk=1)
         
@@ -584,7 +584,7 @@ class MedicineModelTest(TestCase):
             "name": "Meloxicam",
                 "description": "Antiinflamatorio y analgesico",
                 "dose": "8",
-            }
+            },
         )
         
         medicine_updated = Medicine.objects.get(pk=1)
@@ -598,7 +598,7 @@ class MedicineModelTest(TestCase):
                 "name": "Meloxicam",
                 "description": "Antiinflamatorio y analgesico",
                 "dose": "2",
-            }
+            },
         )
         medicine = Medicine.objects.get(pk=1)
         
