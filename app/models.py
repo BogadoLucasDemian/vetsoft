@@ -311,7 +311,7 @@ class Provider (models.Model):
         Provider.objects.create(
             name=provider_data.get("name"),
             email=provider_data.get("email"),
-            address=provider_data.get("address")
+            address=provider_data.get("address"),
         )
 
         return True, None
