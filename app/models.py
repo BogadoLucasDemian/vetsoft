@@ -1,4 +1,4 @@
-import datetime
+import datetime, re
 from enum import Enum
 
 from django.db import models
@@ -22,6 +22,8 @@ def validate_client(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
@@ -51,6 +53,8 @@ def validate_provider(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
@@ -85,6 +89,8 @@ def validate_medicine(data):
 
     if name == "":
         errors["name"] = "Por favor, ingrese un nombre de la medicina"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
     
     if description == "":
         errors["description"] = "Por favor, ingrese una descripcion de la medicina"
@@ -116,6 +122,8 @@ def validate_product(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
     
     if type == "":
         errors["type"] = "Por favor ingrese un tipo"
@@ -151,6 +159,8 @@ def validate_pet(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
     
     if breed == "":
         errors["breed"] = "Por favor ingrese una raza"
@@ -181,6 +191,8 @@ def validate_vet(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
