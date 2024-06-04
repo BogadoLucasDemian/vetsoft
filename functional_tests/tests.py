@@ -109,7 +109,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
     def test_should_show_clients_data(self):
         """Verifica si se muestran los datos de los clientes."""
         Client.objects.create(
-            name="Juan Sebastián Veron",
+            name="Juan Sebastian Veron",
             address="13 y 44",
             phone="221555232",
             email="brujita75@hotmail.com",
@@ -126,7 +126,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
 
         expect(self.page.get_by_text("No existen clientes")).not_to_be_visible()
 
-        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
         expect(self.page.get_by_text("13 y 44")).to_be_visible()
         expect(self.page.get_by_text("221555232")).to_be_visible()
         expect(self.page.get_by_text("brujita75@hotmail.com")).to_be_visible()
@@ -148,7 +148,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
     def test_should_show_client_edit_action(self):
         """Verifica si se muestra la acción para editar un cliente."""
         client = Client.objects.create(
-            name="Juan Sebastián Veron",
+            name="Juan Sebastian Veron",
             address="13 y 44",
             phone="221555232",
             email="brujita75@hotmail.com",
@@ -164,7 +164,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
     def test_should_show_client_delete_action(self):
         """Verifica si se muestra la acción para eliminar un cliente."""
         client = Client.objects.create(
-            name="Juan Sebastián Veron",
+            name="Juan Sebastian Veron",
             address="13 y 44",
             phone="221555232",
             email="brujita75@hotmail.com",
@@ -186,7 +186,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
     def test_should_can_be_able_to_delete_a_client(self):
         """Verifica si se puede eliminar un cliente."""
         Client.objects.create(
-            name="Juan Sebastián Veron",
+            name="Juan Sebastian Veron",
             address="13 y 44",
             phone="221555232",
             email="brujita75@hotmail.com",
@@ -194,7 +194,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
 
         self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
 
-        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
 
         def is_delete_response(response):
             return response.url.find(reverse("clients_delete"))
@@ -205,7 +205,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         response = response_info.value
         self.assertTrue(response.status < 400)
 
-        expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).not_to_be_visible()
 
 
 class ClientCreateEditTestCase(PlaywrightTestCase):
@@ -219,14 +219,14 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
         expect(self.page.get_by_role("form")).to_be_visible()
 
-        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
         self.page.get_by_label("Teléfono").fill("221555232")
         self.page.get_by_label("Email").fill("brujita75@hotmail.com")
         self.page.get_by_label("Dirección").fill("13 y 44")
 
         self.page.get_by_role("button", name="Guardar").click()
 
-        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
         expect(self.page.get_by_text("221555232")).to_be_visible()
         expect(self.page.get_by_text("brujita75@hotmail.com")).to_be_visible()
         expect(self.page.get_by_text("13 y 44")).to_be_visible()
@@ -243,7 +243,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Por favor ingrese un teléfono")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un email")).to_be_visible()
 
-        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
         self.page.get_by_label("Teléfono").fill("221555232")
         self.page.get_by_label("Email").fill("brujita75")
         self.page.get_by_label("Dirección").fill("13 y 44")
@@ -262,7 +262,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
     def test_should_be_able_to_edit_a_client(self):
         """Verifica si se puede editar un cliente."""
         client = Client.objects.create(
-            name="Juan Sebastián Veron",
+            name="Juan Sebastian Veron",
             address="13 y 44",
             phone="221555232",
             email="brujita75@hotmail.com",
@@ -278,7 +278,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
         self.page.get_by_role("button", name="Guardar").click()
 
-        expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).not_to_be_visible()
         expect(self.page.get_by_text("13 y 44")).not_to_be_visible()
         expect(self.page.get_by_text("221555232")).not_to_be_visible()
         expect(self.page.get_by_text("brujita75@hotmail.com")).not_to_be_visible()
@@ -812,7 +812,7 @@ class VetsRepoTestCase(PlaywrightTestCase):
         Verifica que se muestren los datos de los veterinarios correctamente.
         """
         Vet.objects.create(
-            name="Juan Sebastián Veron",
+            name="Juan Sebastian Veron",
             email="brujita75@hotmail.com",
             phone="221555232",
             speciality="Urgencias",
@@ -828,7 +828,7 @@ class VetsRepoTestCase(PlaywrightTestCase):
         self.page.goto(f"{self.live_server_url}{reverse('vets_repo')}")
         
         expect(self.page.get_by_text("No existen veterinarios")).not_to_be_visible()
-        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
         expect(self.page.get_by_text("brujita75@hotmail.com")).to_be_visible()
         expect(self.page.get_by_text("221555232")).to_be_visible()
         expect(self.page.get_by_text("Urgencias")).to_be_visible()
@@ -855,7 +855,7 @@ class VetsRepoTestCase(PlaywrightTestCase):
         Verifica que se muestre la acción para editar un veterinario.
         """
         vet = Vet.objects.create(
-            name="Juan Sebastián Veron",
+            name="Juan Sebastian Veron",
             email="brujita75@hotmail.com",
             phone="221555232",
             speciality="Urgencias",
@@ -874,7 +874,7 @@ class VetsRepoTestCase(PlaywrightTestCase):
         Verifica que se muestre la acción para eliminar un veterinario.
         """
         vet = Vet.objects.create(
-            name="Juan Sebastián Veron",
+            name="Juan Sebastian Veron",
             email="brujita75@hotmail.com",
             phone="221555232",
             speciality="Urgencias",
@@ -902,7 +902,7 @@ class VetsRepoTestCase(PlaywrightTestCase):
         Verifica que se pueda eliminar un veterinario.
         """
         Vet.objects.create(
-            name="Juan Sebastián Veron",
+            name="Juan Sebastian Veron",
             email="brujita75@hotmail.com",
             phone="221555232",
             speciality="Urgencias",
@@ -910,7 +910,7 @@ class VetsRepoTestCase(PlaywrightTestCase):
         
         self.page.goto(f"{self.live_server_url}{reverse('vets_repo')}")
         
-        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
         
         def is_delete_response(response):
             return response.url.find(reverse("vets_delete"))
@@ -922,7 +922,7 @@ class VetsRepoTestCase(PlaywrightTestCase):
         
         self.assertTrue(response.status < 400)
         
-        expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).not_to_be_visible()
 
 
 class VetCreateEditTestCase(PlaywrightTestCase):
@@ -938,14 +938,14 @@ class VetCreateEditTestCase(PlaywrightTestCase):
         
         expect(self.page.get_by_role("form")).to_be_visible()
         
-        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
         self.page.get_by_label("Email").fill("brujita75@hotmail.com")
         self.page.get_by_label("Teléfono").fill("221555232")
         self.page.select_option("select[name=speciality]", value="Urgencias")
         
         self.page.get_by_role("button", name="Guardar").click()
         
-        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
         expect(self.page.get_by_text("brujita75@hotmail.com")).to_be_visible()
         expect(self.page.get_by_text("221555232")).to_be_visible()
         expect(self.page.get_by_text("Urgencias")).to_be_visible()
@@ -964,7 +964,7 @@ class VetCreateEditTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Por favor ingrese un teléfono")).to_be_visible()
         expect(self.page.get_by_text("Por favor seleccione una especialidad")).to_be_visible()
         
-        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
         self.page.get_by_label("Email").fill("brujita75")
         self.page.get_by_label("Teléfono").fill("221555232")
         self.page.select_option("select[name=speciality]", value="Urgencias")
@@ -981,7 +981,7 @@ class VetCreateEditTestCase(PlaywrightTestCase):
         Verifica que se pueda editar un veterinario existente.
         """
         vet = Vet.objects.create(
-            name="Juan Sebastián Veron",
+            name="Juan Sebastian Veron",
             email="brujita75@hotmail.com",
             phone="221555232",
             speciality="Urgencias",
@@ -998,7 +998,7 @@ class VetCreateEditTestCase(PlaywrightTestCase):
         
         self.page.get_by_role("button", name="Guardar").click()
         
-        expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).not_to_be_visible()
         expect(self.page.get_by_text("brujita75@hotmail.com")).not_to_be_visible()
         expect(self.page.get_by_text("221555232")).not_to_be_visible()
         expect(self.page.get_by_text("Urgencias")).not_to_be_visible()
@@ -1022,7 +1022,7 @@ class VetCreateEditTestCase(PlaywrightTestCase):
         
         expect(self.page.get_by_role("form")).to_be_visible()
         
-        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
         self.page.get_by_label("Email").fill("brujita75@hotmail.com")
         self.page.get_by_label("Teléfono").fill("221555232")
         
@@ -1031,7 +1031,7 @@ class VetCreateEditTestCase(PlaywrightTestCase):
         
         self.page.get_by_role("button", name="Guardar").click()
         
-        expect(self.page.get_by_text("Juan Sebastián Veron")).to_be_visible()
+        expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
         expect(self.page.get_by_text("brujita75@hotmail.com")).to_be_visible()
         expect(self.page.get_by_text("221555232")).to_be_visible()
         expect(self.page.get_by_text(valid_specialities[0])).to_be_visible() 

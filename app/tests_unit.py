@@ -10,6 +10,7 @@ from app.models import (
     Provider,
     Speciality,
     Vet,
+    validate_client,
     validate_medicine,
     validate_pet,
     validate_product,
@@ -91,6 +92,73 @@ class ClientModelTest(TestCase):
         client_updated = Client.objects.get(pk=1)
 
         self.assertEqual(client_updated.phone, "221555232")
+
+    def test_validate_client_incorrect_name(self):
+        """
+        Prueba que verifica que si un nombre es ingresado con algún caracter que no sean letras minúsculas, mayúsculas o espacios devuelva el error
+        """
+
+        data = {
+            "name": "Juan Sebastian Veron 11",
+            "phone": "221555232",
+            "address": "13 y 44",
+            "email": "brujita75@hotmail.com",
+        }
+
+        result = validate_client(data)
+
+        self.assertIn("El nombre debe contener solo letras y espacios", result.values())
+
+    def test_validate_client_with_empty_name(self):
+        """Prueba que verifica que no se pueda crear un cliente con el campo nombre vacío"""
+        data = {
+            "name": "",
+            "phone": "221555232",
+            "address": "13 y 44",
+            "email": "brujita75@hotmail.com",
+        }
+
+        errors = validate_client(data)
+
+        self.assertIn("Por favor ingrese un nombre", errors.values())
+
+    def test_update_client_with_empty_name(self):
+        """Prueba que verifica si se produce un error al intentar actualizar un cliente con un campo de nombre vacío.""" 
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+        
+        self.assertEqual(client.name, "Juan Sebastian Veron")
+        
+        client.update_client({"name": ""})
+        client_updated = Client.objects.get(pk=1)
+        
+        self.assertEqual(client_updated.name, "Juan Sebastian Veron")
+
+    def test_update_client_with_incorrect_name(self):
+        """Prueba que verifica si se produce un error al intentar actualizar un cliente con un campo de nombre incorrecto.""" 
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+        
+        self.assertEqual(client.name, "Juan Sebastian Veron")
+        
+        client.update_client({"name": "Juan Sebastian Veron 11"})
+        client_updated = Client.objects.get(pk=1)
+        
+        self.assertEqual(client_updated.name, "Juan Sebastian Veron")
 
 
 class TestValidateProduct(TestCase):
@@ -218,6 +286,38 @@ class TestValidateProduct(TestCase):
         self.assertIn("Por favor ingrese un tipo",result.values())
         self.assertIn("Por favor ingrese un precio",result.values())
 
+    def test_validate_product_incorrect_name(self): 
+        """Prueba que verifica que si un nombre es ingresado con algún caracter que no sean letras minúsculas,
+        mayúsculas o espacios devuelva el error"""
+        
+        data = {
+            "name": "ampicilina 21",
+            "type": "antibiotico",
+            "price": "10",
+        }
+
+        result = validate_product(data)
+
+        self.assertIn("El nombre debe contener solo letras y espacios", result.values())
+
+    def test_update_product_with_incorrect_name(self):
+        """Prueba que verifica si se produce un error al intentar actualizar un producto con un campo de nombre incorrecto.""" 
+        Product.save_product(
+            {
+                "name": "ampicilina",
+                "type": "antibiotico",
+                "price": "10",
+            },
+        )
+        product = Product.objects.get(pk=1)
+        
+        self.assertEqual(product.name, "ampicilina")
+        
+        product.update_product({"name": "ampicilina 21"})
+        product_updated = Product.objects.get(pk=1)
+        
+        self.assertEqual(product_updated.name, "ampicilina")
+
 
 class PetModelTest(TestCase):
     """
@@ -329,6 +429,38 @@ class PetModelTest(TestCase):
         result = validate_pet(data)
         
         self.assertIn("Por favor ingrese una fecha de nacimiento valida y anterior a la de hoy",result.values())
+
+    def test_validate_pet_incorrect_name(self):
+        """Prueba que verifica que si un nombre es ingresado con algún caracter que no sean letras minúsculas,
+        mayúsculas o espacios devuelva el error"""
+        
+        data = {
+            "name": "gatito 10",
+            "breed": "orange",
+            "birthday": "2024-05-18",
+        }
+
+        result = validate_pet(data)
+
+        self.assertIn("El nombre debe contener solo letras y espacios", result.values())
+
+    def test_update_pet_with_incorrect_name(self):
+        """Prueba que verifica si se produce un error al intentar actualizar una mascota con un campo de nombre incorrecto.""" 
+        Pet.save_pet(
+            {
+                "name": "gatito",
+                "breed": "orange",
+                "birthday": "2024-05-18",
+            },
+        )
+        pet = Pet.objects.get(pk=1)
+        
+        self.assertEqual(pet.name, "gatito")
+        
+        pet.update_pet({"name": "gatito 10"})
+        pet_updated = Pet.objects.get(pk=1)
+        
+        self.assertEqual(pet_updated.name, "gatito")
 
 
 class VetModelTest(TestCase):
@@ -442,6 +574,72 @@ class VetModelTest(TestCase):
 
         self.assertIn("Por favor seleccione una especialidad", errors.values())
 
+    def test_validate_vet_incorrect_name(self):
+        """Prueba que verifica que si un nombre es ingresado con algún caracter que no sean letras minúsculas,
+        mayúsculas o espacios devuelva el error"""
+        
+        data = {
+            "name": "Juan Sebastian Veron 11",
+            "email": "brujita75@hotmail.com",
+            "phone": "221555232",
+            "speciality": "Urgencias",
+        }
+
+        result = validate_vet(data)
+
+        self.assertIn("El nombre debe contener solo letras y espacios", result.values())
+
+    def test_validate_vet_with_empty_name(self):
+        """Prueba que verifica que no se pueda crear un veterinario con el campo nombre vacío"""
+        data = {
+            "name": "",
+            "email": "brujita75@hotmail.com",
+            "phone": "221555232",
+            "speciality": "Urgencias",
+        }
+
+        errors = validate_vet(data)
+
+        self.assertIn("Por favor ingrese un nombre", errors.values())
+
+    def test_update_vet_with_empty_name(self):
+        """Prueba que verifica si se produce un error al intentar actualizar un veterinario con un campo de nombre vacío.""" 
+        Vet.save_vet(
+            {
+                "name": "Juan Sebastian Veron",
+                "email": "brujita75@hotmail.com",
+                "phone": "221555232",
+                "speciality": "Urgencias",
+            },
+        )
+        vet = Vet.objects.get(pk=1)
+        
+        self.assertEqual(vet.name, "Juan Sebastian Veron")
+        
+        vet.update_vet({"name": ""})
+        vet_updated = Vet.objects.get(pk=1)
+        
+        self.assertEqual(vet_updated.name, "Juan Sebastian Veron")
+    
+    def test_update_vet_with_incorrect_name(self):
+        """Prueba que verifica si se produce un error al intentar actualizar un veterinario con un campo de nombre incorrecto.""" 
+        Vet.save_vet(
+            {
+                "name": "Juan Sebastian Veron",
+                "email": "brujita75@hotmail.com",
+                "phone": "221555232",
+                "speciality": "Urgencias",
+            },
+        )
+        vet = Vet.objects.get(pk=1)
+        
+        self.assertEqual(vet.name, "Juan Sebastian Veron")
+        
+        vet.update_vet({"name": "Juan Sebastian Veron 11"})
+        vet_updated = Vet.objects.get(pk=1)
+        
+        self.assertEqual(vet_updated.name, "Juan Sebastian Veron")
+
 
 class ProviderModelTest(TestCase):
     """
@@ -544,6 +742,56 @@ class ProviderModelTest(TestCase):
 
         self.assertEqual(updated_provider.address, "Calle falsa 123")
 
+    def test_validate_providert_incorrect_name(self):
+        """Prueba que verifica que si un nombre es ingresado con algún caracter que no sean letras minúsculas,
+        mayúsculas o espacios devuelva el error"""
+        
+        data = {
+            "name":"Demian 7",
+            "email":"demian@utn.com",
+            "address":"Calle falsa 123",
+        }
+
+        result = validate_provider(data)
+
+        self.assertIn("El nombre debe contener solo letras y espacios", result.values())
+
+    def test_update_provider_with_empty_name(self):
+        """Prueba que verifica si se produce un error al intentar actualizar un proveedor con un campo de nombre vacío.""" 
+        Provider.save_provider(
+            {
+                "name":"Demian",
+                "email":"demian@utn.com",
+                "address":"Calle falsa 123",
+            },
+        )
+        provider = Provider.objects.get(pk=1)
+        
+        self.assertEqual(provider.name, "Demian")
+        
+        provider.update_provider({"name": ""})
+        provider_updated = Provider.objects.get(pk=1)
+        
+        self.assertEqual(provider_updated.name, "Demian")
+
+    def test_update_provider_with_incorrect_name(self):
+        """Prueba que verifica si se produce un error al intentar actualizar un proveedor con un campo de nombre incorrecto.""" 
+        Provider.save_provider(
+            {
+                "name":"Demian",
+                "email":"demian@utn.com",
+                "address":"Calle falsa 123",
+            },
+        )
+        provider = Provider.objects.get(pk=1)
+        
+        self.assertEqual(provider.name, "Demian")
+        
+        provider.update_provider({"name": "Demian 7"})
+        provider_updated = Provider.objects.get(pk=1)
+        
+        self.assertEqual(provider_updated.name, "Demian")
+
 
 class MedicineModelTest(TestCase):
     """
@@ -631,3 +879,47 @@ class MedicineModelTest(TestCase):
         
         result = validate_medicine(data)
         self.assertIn("La dosis debe ser un numero entero", result.values())
+
+    def test_validate_medicine_incorrect_name(self):
+        """Prueba que verifica que si un nombre es ingresado con algún caracter que no sean letras minúsculas,
+        mayúsculas o espacios devuelva el error"""
+        
+        data = {
+            "name": "Meloxicam 700",
+            "description": "Antiinflamatorio y analgesico",
+            "dose": "2",
+        }
+
+        result = validate_medicine(data)
+
+        self.assertIn("El nombre debe contener solo letras y espacios", result.values())
+
+    def test_validate_client_with_empty_name(self):
+        """Prueba que verifica que no se pueda crear un medicamento con el campo nombre vacío"""
+        data = {
+            "name": "",
+            "description": "Antiinflamatorio y analgesico",
+            "dose": "2",
+        }
+
+        errors = validate_medicine(data)
+
+        self.assertIn("Por favor, ingrese un nombre de la medicina", errors.values())
+
+    def test_update_medicine_with_incorrect_name(self):
+        """Prueba que verifica si se produce un error al intentar actualizar una medicina con un campo de nombre incorrecto.""" 
+        Medicine.save_medicine(
+            {
+                "name": "Meloxicam",
+                "description": "Antiinflamatorio y analgesico",
+                "dose": "2",
+            },
+        )
+        medicine = Medicine.objects.get(pk=1)
+        
+        self.assertEqual(medicine.name, "Meloxicam")
+        
+        medicine.update_medicine({"name": "Meloxicam 700"})
+        medicine_updated = Medicine.objects.get(pk=1)
+        
+        self.assertEqual(medicine_updated.name, "Meloxicam")
