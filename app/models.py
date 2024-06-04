@@ -1,4 +1,5 @@
-import datetime, re
+import datetime
+import re
 from enum import Enum
 
 from django.db import models

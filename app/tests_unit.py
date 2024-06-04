@@ -10,12 +10,12 @@ from app.models import (
     Provider,
     Speciality,
     Vet,
+    validate_client,
     validate_medicine,
     validate_pet,
     validate_product,
     validate_provider,
     validate_vet,
-    validate_client,
 )
 
 
