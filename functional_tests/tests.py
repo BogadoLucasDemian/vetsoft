@@ -292,6 +292,30 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         expect(edit_action).to_have_attribute(
             "href", reverse("clients_edit", kwargs={"id": client.id}),
         )
+    
+    def validate_phone_number(self, phone_number):
+        """
+        Valida si un número de teléfono es un número.
+
+        Args:
+            phone_number (str): El número de teléfono a validar.
+
+        Returns:
+            bool: True si el número de teléfono es un número, False de lo contrario.
+        """
+        try:
+            int(phone_number)
+            return True
+        except ValueError:
+            return False
+
+    def test_should_validate_phone_number(self):
+        """Verifica la validación de números de teléfono."""
+        valid_phone = "221555232"
+        invalid_phone = "ee32w3"
+
+        self.assertTrue(self.validate_phone_number(valid_phone))
+        self.assertFalse(self.validate_phone_number(invalid_phone))
 
 
 class ProductCreateEditTestCase(PlaywrightTestCase):
