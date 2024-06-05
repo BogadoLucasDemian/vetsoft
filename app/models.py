@@ -28,6 +28,8 @@ def validate_client(data):
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
+    elif not phone.startswith("54"):
+        errors["phone"] = "El teléfono debe empezar con el prefijo 54"
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
@@ -204,7 +206,9 @@ def validate_vet(data):
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
-
+    elif not phone.startswith("54"):
+        errors["phone"] = "El teléfono debe empezar con el prefijo 54"
+    
     if speciality == "":
         errors["speciality"] = "Por favor seleccione una especialidad"
 
