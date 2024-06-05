@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.shortcuts import reverse
-from app.models import Client, Product, Pet, Vet, Speciality, Provider, Medicine
+from app.models import Client, Product, Pet, Vet, Speciality, Provider, Medicine, City
 
 import datetime
 
@@ -48,12 +48,16 @@ class ClientsTest(TestCase):
         """
         Prueba si se puede crear un cliente correctamente.
         """
+
+        city = "La Plata"
+        self.assertTrue(self.is_valid_city(city))
+
         response = self.client.post(
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-                "address": "13 y 44",
+                "city": city,
                 "email": "brujita75@hotmail.com",
             },
         )
@@ -62,10 +66,16 @@ class ClientsTest(TestCase):
 
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
         self.assertEqual(clients[0].phone, "221555232")
-        self.assertEqual(clients[0].address, "13 y 44")
+        self.assertEqual(clients[0].city, "La Plata")
         self.assertEqual(clients[0].email, "brujita75@hotmail.com")
 
         self.assertRedirects(response, reverse("clients_repo"))
+
+    def is_valid_city(self, city):
+        """
+        Verifica si una ciudad dada es válida
+        """
+        return city in [choice.value for choice in City]
 
     def test_validation_errors_create_client(self):
         """
@@ -96,7 +106,7 @@ class ClientsTest(TestCase):
             data={
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75",
             },
         )
@@ -109,7 +119,7 @@ class ClientsTest(TestCase):
         """ 
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
+            city="La Plata",
             phone="221555232",
             email="brujita75@hotmail.com",
         )
@@ -119,7 +129,7 @@ class ClientsTest(TestCase):
             data={
                 "id": client.id,
                 "name": "Guido Carrillo", 
-                "address":client.address,
+                "city":client.city,
                 "phone":client.phone,
                 "email":client.email,
             },
@@ -131,9 +141,45 @@ class ClientsTest(TestCase):
         editedClient = Client.objects.get(pk=client.id)
         self.assertEqual(editedClient.name, "Guido Carrillo")
         self.assertEqual(editedClient.phone, client.phone)
-        self.assertEqual(editedClient.address, client.address)
+        self.assertEqual(editedClient.city, client.city)
         self.assertEqual(editedClient.email, client.email)
 
+    def test_create_client_with_valid_city(self):
+        """Prueba que se pueda crear un cliente con una ciudad válida."""
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "name": "Demian Bogado",
+                "phone": "2241555555",
+                "city": "La Plata",
+                "email": "demian@vetsoft.com",
+            },
+        )        
+
+        self.assertEqual(response.status_code, 302)
+
+        self.assertTrue(Client.objects.filter(name="Demian Bogado").exists())
+
+    def test_edit_client_with_empty_city(self):
+        """Prueba que la edición de un cliente con ciudad vacía muestra un error."""
+        client = Client.objects.create(
+                name= "Demian Bogado",
+                phone= "2241555555",
+                city= "La Plata",
+                email= "demian@vetsoft.com",
+        )
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id": client.id,
+                "name": "Demian Bogado",
+                "phone": "2241555555",
+                "city": "",
+                "email": "demian@vetsoft.com",
+            },
+        )
+
+        self.assertContains(response, "Por favor seleccione una ciudad")
 
 class TestIntegration(TestCase):
     """

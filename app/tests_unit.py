@@ -1,5 +1,5 @@
 from django.test import TestCase
-from app.models import Client, Pet, validate_pet, Vet, Speciality, validate_vet, Provider, validate_provider, validate_product, Medicine, validate_medicine, Product
+from app.models import Client, Pet, validate_pet, Vet, Speciality, validate_vet, Provider, validate_provider, validate_product, Medicine, validate_medicine, Product, City, validate_client
 import datetime
 
 
@@ -10,11 +10,15 @@ class ClientModelTest(TestCase):
 
     def test_can_create_and_get_client(self):
         """Prueba que se pueda crear y obtener un cliente correctamente."""
+
+        city = "La Plata"
+        self.assertTrue(self.is_valid_city(city))
+
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-                "address": "13 y 44",
+                "city": city,
                 "email": "brujita75@hotmail.com",
             }
         )
@@ -23,7 +27,7 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
         self.assertEqual(clients[0].phone, "221555232")
-        self.assertEqual(clients[0].address, "13 y 44")
+        self.assertEqual(clients[0].city, "La Plata")
         self.assertEqual(clients[0].email, "brujita75@hotmail.com")
 
     def test_can_update_client(self):
@@ -32,7 +36,7 @@ class ClientModelTest(TestCase):
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75@hotmail.com",
             }
         )
@@ -43,7 +47,7 @@ class ClientModelTest(TestCase):
         client.update_client({
             "name": "Juan Sebastian Veron",
             "phone": "221555233",
-            "address": "13 y 44",
+            "city": "La Plata",
             "email": "brujita75@hotmail.com",
             })
 
@@ -63,7 +67,7 @@ class ClientModelTest(TestCase):
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75@hotmail.com",
             }
         )
@@ -77,6 +81,30 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(client_updated.phone, "221555232")
 
+    def is_valid_city(self, city):
+        """
+        Verifica si una ciudad dada es válida
+        """
+        return city in [choice.value for choice in City]
+    
+    def test_empty_city_error(self):
+        """
+    Prueba que verifica si se produce un error al intentar crear un veterinario con una especialidad vacía.
+
+    Se crea un diccionario de datos que representa un veterinario con una especialidad vacía.
+    Luego, se valida el diccionario de datos y se verifica que se encuentre el mensaje de error
+    correspondiente en los errores generados.
+        """
+        data = {
+            "name": "Juan Sebastian Veron",
+            "phone": "221555233",
+            "city": "",
+            "email": "brujita75@hotmail.com",
+        }
+
+        errors = validate_client(data)
+
+        self.assertIn("Por favor seleccione una ciudad", errors.values())
 
 class TestValidateProduct(TestCase):
     """
