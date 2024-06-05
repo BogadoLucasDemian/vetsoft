@@ -1,7 +1,6 @@
 import datetime
 
 from django.test import TestCase
-from django.core.exceptions import ValidationError
 
 from app.models import (
     Client,
@@ -32,7 +31,7 @@ class ClientModelTest(TestCase):
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
                 "address": "13 y 44",
-                "email": "brujita75@hotmail.com",
+                "email": "brujita75@vetsoft.com",
             },
         )
         clients = Client.objects.all()
@@ -41,7 +40,31 @@ class ClientModelTest(TestCase):
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
         self.assertEqual(clients[0].phone, "221555232")
         self.assertEqual(clients[0].address, "13 y 44")
-        self.assertEqual(clients[0].email, "brujita75@hotmail.com")
+        self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
+
+    def test_create_client_with_invalid_email(self):
+        """Intenta crear un cliente con un email invalido"""
+        data = {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75",
+            }
+        errors = validate_client(data)
+        self.assertIn("email", errors)
+        self.assertEqual(errors["email"], "Por favor ingrese un email valido")
+
+    def test_create_client_with_invalid_email_vetsoft_com(self):
+        """Intenta crear un cliente con un email que no contenga 'vetsoft.com'"""
+        data = {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@gmail.com",
+            }
+        errors = validate_client(data)
+        self.assertIn("email", errors)
+        self.assertEqual(errors["email"], "Por favor ingrese un email que incluya '@vetsoft.com'")
 
     def test_can_update_client(self):
         """Prueba que se pueda actualizar la información de un cliente correctamente."""
@@ -50,7 +73,7 @@ class ClientModelTest(TestCase):
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
                 "address": "13 y 44",
-                "email": "brujita75@hotmail.com",
+                "email": "brujita75@vetsoft.com",
             },
         )
         client = Client.objects.get(pk=1)
@@ -61,7 +84,7 @@ class ClientModelTest(TestCase):
             "name": "Juan Sebastian Veron",
             "phone": "221555233",
             "address": "13 y 44",
-            "email": "brujita75@hotmail.com",
+            "email": "brujita75@vetsoft.com",
             })
 
         client_updated = Client.objects.get(pk=1)
@@ -81,7 +104,7 @@ class ClientModelTest(TestCase):
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
                 "address": "13 y 44",
-                "email": "brujita75@hotmail.com",
+                "email": "brujita75@vetsoft.com",
             },
         )
         client = Client.objects.get(pk=1)
@@ -110,13 +133,65 @@ class ClientModelTest(TestCase):
 
         self.assertIn("El nombre debe contener solo letras y espacios", result.values())
 
+    def test_update_client_with_invalid_email(self):
+        """
+    Prueba que el cliente no se actualice si se proporciona un email invalido
+
+    Se crea un cliente con un email válido. Luego se intenta
+    actualizar el cliente con un email invalido. Se verifica que
+    el email cliente no cambie después de intentar la actualización.
+        """
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@vetsoft.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+
+        self.assertEqual(client.email, "brujita75@vetsoft.com")
+
+        client.update_client({"email": "brujita75vetsoft.com"})
+
+        client_updated = Client.objects.get(pk=1)
+
+        self.assertEqual(client_updated.email, "brujita75@vetsoft.com")
+
+    def test_update_client_with_invalid_email_vetsoft_com(self):
+        """
+    Prueba que el cliente no se actualice si se proporciona un email que sin 'vetsoft.com'
+
+    Se crea un cliente con un email válido. Luego se intenta
+    actualizar el cliente con un email sin 'vetsoft.com'. Se verifica que
+    el email cliente no cambie después de intentar la actualización.
+        """
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@vetsoft.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+
+        self.assertEqual(client.email, "brujita75@vetsoft.com")
+
+        client.update_client({"email": "brujita75@gmail.com"})
+
+        client_updated = Client.objects.get(pk=1)
+
+        self.assertEqual(client_updated.email, "brujita75@vetsoft.com")
+
     def test_validate_client_with_empty_name(self):
         """Prueba que verifica que no se pueda crear un cliente con el campo nombre vacío"""
         data = {
             "name": "",
             "phone": "221555232",
             "address": "13 y 44",
-            "email": "brujita75@hotmail.com",
+            "email": "brujita75@vetsoft.com",
         }
 
         errors = validate_client(data)
@@ -130,7 +205,7 @@ class ClientModelTest(TestCase):
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
                 "address": "13 y 44",
-                "email": "brujita75@hotmail.com",
+                "email": "brujita75@vetsoft.com",
             },
         )
         client = Client.objects.get(pk=1)
@@ -149,7 +224,7 @@ class ClientModelTest(TestCase):
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
                 "address": "13 y 44",
-                "email": "brujita75@hotmail.com",
+                "email": "brujita75@vetsoft.com",
             },
         )
         client = Client.objects.get(pk=1)

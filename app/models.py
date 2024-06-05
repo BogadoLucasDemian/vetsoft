@@ -2,8 +2,8 @@ import datetime
 import re
 from enum import Enum
 
-from django.db import models
 from django.core.exceptions import ValidationError
+from django.db import models
 
 
 def validate_client(data):
@@ -36,6 +36,8 @@ def validate_client(data):
         errors["email"] = "Por favor ingrese un email"
     elif email.count("@") == 0:
         errors["email"] = "Por favor ingrese un email valido"
+    elif not email.endswith('@vetsoft.com'):
+        errors["email"] = "Por favor ingrese un email que incluya '@vetsoft.com'"
 
     return errors
 
@@ -238,6 +240,9 @@ class Client(models.Model):
     
     @classmethod
     def validate_phone(cls, phone):
+        """
+        Valida que el telefono del cliente sea un numero y si no lo es retorna un mensaje de error
+        """
         if not phone.isdigit():
             raise ValidationError("El teléfono debe ser un número")
     
