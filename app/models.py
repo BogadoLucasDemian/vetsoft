@@ -33,6 +33,8 @@ def validate_client(data):
         errors["email"] = "Por favor ingrese un email"
     elif email.count("@") == 0:
         errors["email"] = "Por favor ingrese un email valido"
+    elif "vetsoft.com" not in email:
+        errors["email"] = "Por favor ingrese un email que incluya '@vetsoft.com'"
 
     return errors
 
