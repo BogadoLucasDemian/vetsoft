@@ -53,7 +53,7 @@ class ClientsTest(TestCase):
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron",
-                "phone": "221555232",
+                "phone": "54221555232",
                 "address": "13 y 44",
                 "email": "brujita75@vetsoft.com",
             },
@@ -62,7 +62,7 @@ class ClientsTest(TestCase):
         self.assertEqual(len(clients), 1)
 
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
-        self.assertEqual(clients[0].phone, "221555232")
+        self.assertEqual(clients[0].phone, "54221555232")
         self.assertEqual(clients[0].address, "13 y 44")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
@@ -127,7 +127,7 @@ class ClientsTest(TestCase):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
             address="13 y 44",
-            phone="221555232",
+            phone="54221555232",
             email="brujita75@vetsoft.com",
         )
 
@@ -668,7 +668,7 @@ class VetsTest(TestCase):
             data={
                 "name": "Juan Sebastian Veron",
                 "email": "brujita75@hotmail.com",
-                "phone": "221555232",
+                "phone": "54221555232",
                 "speciality": speciality,
             },
         )
@@ -678,7 +678,7 @@ class VetsTest(TestCase):
         
         self.assertEqual(vets[0].name, "Juan Sebastian Veron")
         self.assertEqual(vets[0].email, "brujita75@hotmail.com")
-        self.assertEqual(vets[0].phone, "221555232")
+        self.assertEqual(vets[0].phone, "54221555232")
         self.assertEqual(vets[0].speciality, "Urgencias")
         
         self.assertRedirects(response, reverse("vets_repo"))
@@ -722,7 +722,7 @@ class VetsTest(TestCase):
         """Prueba que un veterinario pueda ser editado con datos válidos."""
         vet = Vet.objects.create(
             name="Juan Sebastián Veron",
-            phone="221555232",
+            phone="54221555232",
             email="brujita75@hotmail.com",
             speciality="Urgencias",
         )
@@ -752,7 +752,7 @@ class VetsTest(TestCase):
         response = self.client.post(reverse("vets_form"), {
             "name": "Juan Sebastian Veron",
             "email": "brujita75@hotmail.com",
-            "phone": "221555232",
+            "phone": "54221555232",
             "speciality": "Urgencias",
         })
 
