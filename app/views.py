@@ -26,7 +26,6 @@ def clients_form(request, id=None):
     Renderiza el template clients/form.html, el cuál es el formulario de creación/edición de clientes.
     Valida si existe el id entre los parámetros del cuerpo de la request, si existe renderiza el form con datos a editar. De lo contrario renderiza para crear uno nuevo
     """
-    
     if request.method == "POST":
         client_id = request.POST.get("id", "")
         errors = {}
@@ -48,7 +47,6 @@ def clients_form(request, id=None):
     client = None
     if id is not None:
         client = get_object_or_404(Client, pk=id)
-
     return render(request, "clients/form.html", {"client": client})
 
 def clients_delete(request):

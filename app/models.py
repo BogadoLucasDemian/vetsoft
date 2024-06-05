@@ -2,6 +2,7 @@ import datetime
 import re
 from enum import Enum
 
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -28,6 +29,8 @@ def validate_client(data):
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
+    elif not phone.isdigit():
+        errors["phone"] = "El teléfono debe ser un número"
     elif not phone.startswith("54"):
         errors["phone"] = "El teléfono debe empezar con el prefijo 54"
 
@@ -35,7 +38,7 @@ def validate_client(data):
         errors["email"] = "Por favor ingrese un email"
     elif email.count("@") == 0:
         errors["email"] = "Por favor ingrese un email valido"
-    elif "vetsoft.com" not in email:
+    elif not email.endswith('@vetsoft.com'):
         errors["email"] = "Por favor ingrese un email que incluya '@vetsoft.com'"
 
     return errors
@@ -238,6 +241,15 @@ class Client(models.Model):
             str: Nombre del cliente.
         """
         return self.name
+    
+    @classmethod
+    def validate_phone(cls, phone):
+        """
+        Valida que el telefono del cliente sea un numero y si no lo es retorna un mensaje de error
+        """
+        if not phone.isdigit():
+            raise ValidationError("El teléfono debe ser un número")
+    
 
     @classmethod
     def save_client(cls, client_data):
@@ -253,6 +265,14 @@ class Client(models.Model):
         errors = validate_client(client_data)
 
         if len(errors.keys()) > 0:
+            return False, errors
+
+        try:
+            cls.validate_phone(client_data['phone'])
+        except ValidationError as e:
+            errors['phone'] = str(e)
+
+        if errors:
             return False, errors
 
         Client.objects.create(
@@ -277,6 +297,17 @@ class Client(models.Model):
         errors = validate_client(client_data)
 
         if len(errors.keys()) > 0:
+            return False, errors
+
+        try:
+            self.validate_phone(client_data['phone'])
+        except ValidationError as e:
+            if 'phone' in errors:
+                errors['phone'] += f' {str(e)}'
+            else:
+                errors['phone'] = str(e)
+
+        if errors:
             return False, errors
 
         self.name = client_data.get("name", "") or self.name
