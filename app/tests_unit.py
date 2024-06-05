@@ -236,6 +236,36 @@ class ClientModelTest(TestCase):
         
         self.assertEqual(client_updated.name, "Juan Sebastian Veron")
 
+    def test_validate_phone_with_non_numeric_value(self):
+        """Prueba que verifica que la validación del teléfono genere un error si se proporciona un valor no numérico."""
+
+        # Datos de cliente con teléfono no numérico
+        form_data = {
+            "name": "Juan Sebastian Veron",
+            "phone": "ee21",  # Número de teléfono no numérico
+            "address": "13 y 44",
+            "email": "brujita75@hotmail.com",
+        }
+
+        # Crear un cliente inicial con los datos proporcionados
+        client = Client.objects.create(**form_data)
+
+        # Verificar que el teléfono inicial es correcto
+        self.assertEqual(client.phone, "ee21")
+
+        # Intentar actualizar el cliente con un número de teléfono no numérico
+        success, errors = client.update_client({"phone": "ee32w3"})
+
+        # Verificar que la actualización falló
+        self.assertFalse(success)
+
+        # Verificar que se mantuvo el teléfono original
+        updated_client = Client.objects.get(pk=client.pk)
+        self.assertEqual(updated_client.phone, "ee21")
+
+        # Verificar que el error relacionado con el teléfono no numérico se haya devuelto
+        self.assertIn("phone", errors)
+        self.assertEqual(errors["phone"], "El teléfono debe ser un número")
 
 class TestValidateProduct(TestCase):
     """
