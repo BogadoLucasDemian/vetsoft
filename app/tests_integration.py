@@ -6,6 +6,7 @@ from django.test import TestCase
 from app.models import Client, Medicine, Pet, Product, Provider, Speciality, Vet
 
 
+
 class HomePageTest(TestCase):
     """
     Pruebas para la vista de la página de inicio.
@@ -195,6 +196,27 @@ class ClientsTest(TestCase):
 
         self.assertContains(response, "El nombre debe contener solo letras y espacios")
 
+    def test_user_cant_edit_client_with_incorrect_name(self):
+        """Prueba que un usuario no pueda editar un cliente con un telefono incorrecto."""
+        client=Client.objects.create(
+            name="Juan Sebastian Veron",
+            phone="1128823465",
+            address="13 y 44",
+            email="brujita75@hotmail.com",
+        )
+
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id":client.id,
+                "name":client.name,
+                "phone":'ee3211',
+                "address":client.address,
+                "email":client.email,
+            },
+        )
+
+        self.assertContains(response, "El teléfono debe ser un número")
 
 class TestIntegration(TestCase):
     """
