@@ -53,21 +53,12 @@
                 </div>
                 <div>
                     <label for="phone" class="form-label">Teléfono</label>
-                    {% if vet.phone and not errors.phone %}
                     <input type="text"
                         id="phone"
                         name="phone"
                         class="form-control"
                         value="{{vet.phone}}"
                         required/>
-                    {% else %}
-                    <input type="text"
-                        id="phone"
-                        name="phone"
-                        class="form-control"
-                        value=""
-                        required/>
-                    {% endif %}
 
                     {% if errors.phone %}
                         <div class="invalid-feedback">

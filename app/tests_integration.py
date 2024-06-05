@@ -53,7 +53,7 @@ class ClientsTest(TestCase):
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron",
-                "phone": "54221555232",
+                "phone": "221555232",
                 "address": "13 y 44",
                 "email": "brujita75@vetsoft.com",
             },
@@ -62,7 +62,7 @@ class ClientsTest(TestCase):
         self.assertEqual(len(clients), 1)
 
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
-        self.assertEqual(clients[0].phone, "54221555232")
+        self.assertEqual(clients[0].phone, "221555232")
         self.assertEqual(clients[0].address, "13 y 44")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
@@ -127,7 +127,7 @@ class ClientsTest(TestCase):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
             address="13 y 44",
-            phone="54221555232",
+            phone="221555232",
             email="brujita75@vetsoft.com",
         )
 
@@ -258,6 +258,7 @@ class ClientsTest(TestCase):
         )
 
         self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
     def test_user_cant_edit_client_with_incorrect_phone(self):
         """Prueba que un usuario no pueda editar un cliente con un telefono incorrecto."""
         client=Client.objects.create(
@@ -279,46 +280,6 @@ class ClientsTest(TestCase):
         )
 
         self.assertContains(response, "El teléfono debe ser un número")
-    
-    def test_validation_invalid_phone(self):
-            """
-            Prueba si se muestra un error de validación cuando se ingresa un telefono que no inicie el prefijo 54
-            """
-            response = self.client.post(
-                reverse("clients_form"),
-                data={
-                    "name": "Juan Sebastian Veron",
-                    "phone": "221555232",
-                    "address": "13 y 44",
-                    "email": "brujita75@vetsoft.com",
-                },
-            )
-
-            self.assertContains(response, "El teléfono debe empezar con el prefijo 54")
-    
-    def test_edit_user_with_invalid_phone(self):
-        """
-        Prueba si se muestra un error de validación cuando se edita el telefono y el mismo no comience con el prefijo 54
-        """ 
-        client = Client.objects.create(
-            name="Juan Sebastián Veron",
-            address="13 y 44",
-            phone="54221555232",
-            email="brujita75@vetsoft.com",
-        )
-
-        response = self.client.post(
-            reverse("clients_form"),
-            data={
-                "id": client.id,
-                "name": client.name, 
-                "address":client.address,
-                "phone":"221555232",
-                "email":client.email,
-            },
-        )
-
-        self.assertContains(response, "El teléfono debe empezar con el prefijo 54")
 
 class TestIntegration(TestCase):
     """
@@ -728,7 +689,7 @@ class VetsTest(TestCase):
             data={
                 "name": "Juan Sebastian Veron",
                 "email": "brujita75@hotmail.com",
-                "phone": "54221555232",
+                "phone": "221555232",
                 "speciality": speciality,
             },
         )
@@ -738,7 +699,7 @@ class VetsTest(TestCase):
         
         self.assertEqual(vets[0].name, "Juan Sebastian Veron")
         self.assertEqual(vets[0].email, "brujita75@hotmail.com")
-        self.assertEqual(vets[0].phone, "54221555232")
+        self.assertEqual(vets[0].phone, "221555232")
         self.assertEqual(vets[0].speciality, "Urgencias")
         
         self.assertRedirects(response, reverse("vets_repo"))
@@ -782,7 +743,7 @@ class VetsTest(TestCase):
         """Prueba que un veterinario pueda ser editado con datos válidos."""
         vet = Vet.objects.create(
             name="Juan Sebastián Veron",
-            phone="54221555232",
+            phone="221555232",
             email="brujita75@hotmail.com",
             speciality="Urgencias",
         )
@@ -812,7 +773,7 @@ class VetsTest(TestCase):
         response = self.client.post(reverse("vets_form"), {
             "name": "Juan Sebastian Veron",
             "email": "brujita75@hotmail.com",
-            "phone": "54221555232",
+            "phone": "221555232",
             "speciality": "Urgencias",
         })
 
@@ -900,43 +861,7 @@ class VetsTest(TestCase):
         )
 
         self.assertContains(response, "El nombre debe contener solo letras y espacios")
-        
-    def test_validation_invalid_phone(self):
-        """
-        Prueba si se muestra un error de validación cuando se ingresa un telefono inválido.
-        """
-        response = self.client.post(
-            reverse("vets_form"),
-            data={
-                "name": "Juan Sebastian Veron",
-                "email": "brujita75@hotmail.com",
-                "phone": "221555232",
-                "speciality": "Urgencias",
-            },
-        )
 
-        self.assertContains(response, "El teléfono debe empezar con el prefijo 54")
-    
-    def test_edit_user_with_invalid_phone(self):
-        """Prueba que la edición de un veterinario con un telefono invalido muestre un error."""
-        vet = Vet.objects.create(
-            name="Juan Sebastian Veron",
-            email= "brujita75@hotmail.com",
-            phone= "54221555232",
-            speciality= "Urgencias",
-        )
-        response = self.client.post(
-            reverse("vets_form"),
-            data={
-                "id": vet.id,
-                "name": "Juan Sebastian Veron",
-                "email": "brujita75@hotmail.com",
-                "phone": "221555232",
-                "speciality": "Urgencias",
-            },
-        )
-
-        self.assertContains(response, "El teléfono debe empezar con el prefijo 54")
 
 class ProvidersTest(TestCase):
     """
