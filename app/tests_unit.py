@@ -463,35 +463,39 @@ class ProviderModelTest(TestCase):
 
     def test_can_create_and_get_provider(self):
         """Prueba que verifica si se puede crear y obtener un proveedor."""
+
+        city = "La Plata"
+        self.assertTrue(self.is_valid_city(city))
+
         Provider.save_provider(
             {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123"
+                "city":city
             }
         )
 
         providers = Provider.objects.all()
         self.assertEqual(len(providers), 1)
 
-    def test_validate_empty_address_when_create_provider(self):
-        """Prueba que valida una dirección vacía al crear un proveedor."""
+    def test_validate_empty_city_when_create_provider(self):
+        """Prueba que valida una ciudad vacía al crear un proveedor."""
         provider_data = {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":""
+                "city":""
             }
 
         result = validate_provider(provider_data)
 
-        self.assertIn("Por favor ingrese una dirección", result.values())
+        self.assertIn("Por favor seleccione una ciudad", result.values())
 
     def test_validate_provider_with_everything_ok(self):
         """Prueba la validación de un proveedor con todos los campos válidos."""
         provider_data = {
             "name":"Demian",
             "email":"demian@utn.com",
-            "address":"Calle falsa 123"
+            "city":"La Plata"
         }
 
         result = validate_provider(provider_data)
@@ -503,13 +507,13 @@ class ProviderModelTest(TestCase):
         provider_data = {
             "name":"",
             "email":"",
-            "address":""
+            "city":""
         }
 
         result = validate_provider(provider_data)
         self.assertIn("Por favor ingrese un nombre", result.values())
         self.assertIn("Por favor ingrese un email", result.values())
-        self.assertIn("Por favor ingrese una dirección", result.values())
+        self.assertIn("Por favor seleccione una ciudad", result.values())
 
     def test_can_update_provider(self):
         """Prueba que verifica si se puede actualizar un proveedor."""
@@ -517,7 +521,7 @@ class ProviderModelTest(TestCase):
             {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123"
+                "city":"La Plata"
             }
         )
 
@@ -528,20 +532,20 @@ class ProviderModelTest(TestCase):
         provider.update_provider({
             "name":provider.name,
             "email":provider.email,
-            "address":"Avenida Siempreviva 742"
+            "city":"Berisso"
         })
 
         updated_provider = Provider.objects.get(pk=1)
 
-        self.assertEqual(updated_provider.address, "Avenida Siempreviva 742")
+        self.assertEqual(updated_provider.city, "Berisso")
 
-    def test_cant_update_with_empty_address(self):
-        """Prueba que verifica que no se puede actualizar con una dirección vacía."""
+    def test_cant_update_with_empty_city(self):
+        """Prueba que verifica que no se puede actualizar con una ciudad vacía."""
         Provider.save_provider(
             {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123"
+                "city":"La Plata"
             }
         )
 
@@ -550,13 +554,18 @@ class ProviderModelTest(TestCase):
         provider.update_provider({
             "name":provider.name,
             "email":provider.email,
-            "address":""
+            "city":""
         })
 
         updated_provider = Provider.objects.get(pk=1)
 
-        self.assertEqual(updated_provider.address, "Calle falsa 123")
+        self.assertEqual(updated_provider.city, "La Plata")
 
+    def is_valid_city(self, city):
+        """
+        Verifica si una ciudad dada es válida
+        """
+        return city in [choice.value for choice in City]
 
 class MedicineModelTest(TestCase):
     """

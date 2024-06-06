@@ -49,7 +49,7 @@ def validate_provider(data):
     
     name = data.get("name", "")
     email = data.get("email", "")
-    address = data.get("address", "")
+    city = data.get("city", "")
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
@@ -59,8 +59,8 @@ def validate_provider(data):
     elif email.count("@") == 0:
         errors["email"] = "Por favor ingrese un email valido"
 
-    if address == "":
-        errors["address"] = "Por favor ingrese una dirección"
+    if city == "":
+        errors["city"] = "Por favor seleccione una ciudad"
 
     return errors
 
@@ -299,7 +299,7 @@ class Provider (models.Model):
 
     name = models.CharField(max_length=100)
     email = models.EmailField()
-    address = models.CharField(max_length=200)
+    city = models.CharField(max_length=50, choices=City.choices(), default=City.LaPlata)
 
     def __str__(self):
         """
@@ -329,7 +329,7 @@ class Provider (models.Model):
         Provider.objects.create(
             name=provider_data.get("name"),
             email=provider_data.get("email"),
-            address=provider_data.get("address")
+            city=provider_data.get("city", City.LaPlata),
         )
 
         return True, None
@@ -351,7 +351,7 @@ class Provider (models.Model):
         
         self.name = provider_data.get("name", "") or self.name
         self.email = provider_data.get("email", "") or self.email
-        self.address = provider_data.get("address", "") or self.address
+        self.city = provider_data.get("city", "") or self.city
 
         self.save()
         return True, None

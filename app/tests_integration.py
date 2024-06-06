@@ -621,12 +621,16 @@ class ProvidersTest(TestCase):
 
     def test_can_create_provider(self):
         """Prueba que se puede crear un proveedor con datos válidos."""
+
+        city = "La Plata"
+        self.assertTrue(self.is_valid_city(city))
+
         response = self.client.post(
             reverse("providers_form"),
             data = {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123"
+                "city":city
             },
         )
 
@@ -635,9 +639,15 @@ class ProvidersTest(TestCase):
 
         self.assertEqual(providers[0].name, "Demian")
         self.assertEqual(providers[0].email, "demian@utn.com")
-        self.assertEqual(providers[0].address, "Calle falsa 123")
+        self.assertEqual(providers[0].city, "La Plata")
 
         self.assertRedirects(response, reverse("providers_repo"))
+
+    def is_valid_city(self, city):
+        """
+        Verifica si una ciudad dada es válida
+        """
+        return city in [choice.value for choice in City]
 
     def test_validation_errors_when_create_provider(self):
         """Prueba que la validación de errores funciona al crear un proveedor sin datos."""
@@ -648,32 +658,50 @@ class ProvidersTest(TestCase):
 
         self.assertContains(response, "Por favor ingrese un nombre")
         self.assertContains(response, "Por favor ingrese un email")
-        self.assertContains(response, "Por favor ingrese una dirección")
+        self.assertContains(response, "Por favor seleccione una ciudad")
 
     def test_should_response_with_404_status_if_provider_doesnt_exists(self):
         """Prueba que la vista responda con un estado 404 si el proveedor no existe."""
         response = self.client.get(reverse("providers_edit", kwargs={"id":"742"}))
         self.assertEqual(response.status_code, 404)
 
-    def test_cant_create_provider_with_empty_address(self):
-        """Prueba que no se pueda crear un proveedor con una dirección vacía."""
+    def test_can_create_provider_with_valid_city(self):
+        """Prueba que no se pueda crear un proveedor con una ciudad vacía."""
+        city = "La Plata"
+        self.assertTrue(self.is_valid_city(city))
+        
         response = self.client.post(
             reverse("providers_form"),
             data={
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":""
+                "city":city
             }
         )
 
-        self.assertContains(response, "Por favor ingrese una dirección")
+        self.assertEqual(response.status_code, 302)
+
+        self.assertTrue(Provider.objects.filter(name="Demian").exists())
+
+    def test_cant_create_provider_with_empty_city(self):
+        """Prueba que no se pueda crear un proveedor con una ciudad vacía."""
+        response = self.client.post(
+            reverse("providers_form"),
+            data={
+                "name":"Demian",
+                "email":"demian@utn.com",
+                "city":""
+            }
+        )
+
+        self.assertContains(response, "Por favor seleccione una ciudad")
 
     def test_user_can_edit_provider_with_valid_data(self):
         """Prueba que un usuario pueda editar un proveedor con datos válidos."""
         provider = Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            address="Calle falsa 123"
+            city="La Plata"
         )
 
         response = self.client.post(
@@ -682,7 +710,7 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":provider.name,
                 "email":provider.email,
-                "address":"Avenida Siempreviva 742"
+                "city":"Berisso"
             }
         )
 
@@ -693,7 +721,7 @@ class ProvidersTest(TestCase):
         provider=Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            address="Calle falsa 123"
+            city="La Plata"
         )
 
         response = self.client.post(
@@ -702,20 +730,20 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":"",
                 "email":"",
-                "address":""
+                "city":""
             }
         )
 
         self.assertContains(response, "Por favor ingrese un nombre")
         self.assertContains(response, "Por favor ingrese un email")
-        self.assertContains(response, "Por favor ingrese una dirección")
+        self.assertContains(response, "Por favor seleccione una ciudad")
 
-    def test_user_cant_edit_provider_with_empty_address(self):
-        """Prueba que un usuario no pueda editar un proveedor con una dirección vacía."""
+    def test_user_cant_edit_provider_with_empty_city(self):
+        """Prueba que un usuario no pueda editar un proveedor con una ciudad vacía."""
         provider=Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            address="Calle falsa 123"
+            city="La Plata"
         )
 
         response = self.client.post(
@@ -724,11 +752,11 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":provider.name,
                 "email":provider.email,
-                "address":""
+                "city":""
             }
         )
 
-        self.assertContains(response, "Por favor ingrese una dirección")
+        self.assertContains(response, "Por favor seleccione una ciudad")
 
 class MedicinesTest(TestCase):
     """
