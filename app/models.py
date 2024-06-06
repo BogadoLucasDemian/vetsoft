@@ -21,6 +21,7 @@ def validate_client(data):
     name = data.get("name", "")
     phone = data.get("phone", "")
     email = data.get("email", "")
+    city = data.get("city", "")
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
@@ -41,6 +42,9 @@ def validate_client(data):
     elif not email.endswith('@vetsoft.com'):
         errors["email"] = "Por favor ingrese un email que incluya '@vetsoft.com'"
 
+    if city == "":
+        errors["city"] = "Por favor seleccione una ciudad"
+
     return errors
 
 def validate_provider(data):
@@ -57,7 +61,7 @@ def validate_provider(data):
     
     name = data.get("name", "")
     email = data.get("email", "")
-    address = data.get("address", "")
+    city = data.get("city", "")
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
@@ -69,8 +73,8 @@ def validate_provider(data):
     elif email.count("@") == 0:
         errors["email"] = "Por favor ingrese un email valido"
 
-    if address == "":
-        errors["address"] = "Por favor ingrese una dirección"
+    if city == "":
+        errors["city"] = "Por favor seleccione una ciudad"
 
     return errors
 
@@ -217,6 +221,22 @@ def validate_vet(data):
 
     return errors
 
+class City(Enum):
+    """
+    Enumeración que representa las especialidades veterinarias.
+    """
+
+    LaPlata = "La Plata"
+    Berisso = "Berisso"
+    Ensenada = "Ensenada"
+    
+    @classmethod
+    def choices(cls):
+        """
+        Retorna una lista de tuplas con las opciones de ciudad.
+        """
+        return [(key.name, key.value) for key in cls]
+
 class Client(models.Model):
     """
     Modelo que representa un cliente.
@@ -231,7 +251,7 @@ class Client(models.Model):
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     email = models.EmailField()
-    address = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=50, choices=City.choices(), default=City.LaPlata)
 
     def __str__(self):
         """
@@ -279,7 +299,7 @@ class Client(models.Model):
             name=client_data.get("name"),
             phone=client_data.get("phone"),
             email=client_data.get("email"),
-            address=client_data.get("address"),
+            city=client_data.get("city", City.LaPlata),
         )
 
         return True, None
@@ -313,7 +333,7 @@ class Client(models.Model):
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
-        self.address = client_data.get("address", "") or self.address
+        self.city = client_data.get("city", "") or self.city
 
         self.save()
         return True, None
@@ -331,7 +351,7 @@ class Provider (models.Model):
 
     name = models.CharField(max_length=100)
     email = models.EmailField()
-    address = models.CharField(max_length=200)
+    city = models.CharField(max_length=50, choices=City.choices(), default=City.LaPlata)
 
     def __str__(self):
         """
@@ -361,7 +381,7 @@ class Provider (models.Model):
         Provider.objects.create(
             name=provider_data.get("name"),
             email=provider_data.get("email"),
-            address=provider_data.get("address"),
+            city=provider_data.get("city", City.LaPlata),
         )
 
         return True, None
@@ -383,7 +403,7 @@ class Provider (models.Model):
         
         self.name = provider_data.get("name", "") or self.name
         self.email = provider_data.get("email", "") or self.email
-        self.address = provider_data.get("address", "") or self.address
+        self.city = provider_data.get("city", "") or self.city
 
         self.save()
         return True, None

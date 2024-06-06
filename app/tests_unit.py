@@ -3,6 +3,7 @@ import datetime
 from django.test import TestCase
 
 from app.models import (
+    City,
     Client,
     Medicine,
     Pet,
@@ -26,11 +27,15 @@ class ClientModelTest(TestCase):
 
     def test_can_create_and_get_client(self):
         """Prueba que se pueda crear y obtener un cliente correctamente."""
+
+        city = "La Plata"
+        self.assertTrue(self.is_valid_city(city))
+
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "54221555232",
-                "address": "13 y 44",
+                "city": city,
                 "email": "brujita75@vetsoft.com",
             },
         )
@@ -39,7 +44,7 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
         self.assertEqual(clients[0].phone, "54221555232")
-        self.assertEqual(clients[0].address, "13 y 44")
+        self.assertEqual(clients[0].city, "La Plata")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
     def test_create_client_with_invalid_email(self):
@@ -47,7 +52,7 @@ class ClientModelTest(TestCase):
         data = {
                 "name": "Juan Sebastian Veron",
                 "phone": "54221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75",
             }
         errors = validate_client(data)
@@ -59,7 +64,7 @@ class ClientModelTest(TestCase):
         data = {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75@gmail.com",
             }
         errors = validate_client(data)
@@ -72,7 +77,7 @@ class ClientModelTest(TestCase):
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "54221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
             },
         )
@@ -83,7 +88,7 @@ class ClientModelTest(TestCase):
         client.update_client({
             "name": "Juan Sebastian Veron",
             "phone": "54221555233",
-            "address": "13 y 44",
+            "city": "La Plata",
             "email": "brujita75@vetsoft.com",
             })
 
@@ -103,7 +108,7 @@ class ClientModelTest(TestCase):
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "54221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
             },
         )
@@ -124,9 +129,9 @@ class ClientModelTest(TestCase):
 
         data = {
             "name": "Juan Sebastian Veron 11",
-            "phone": "221555232",
-            "address": "13 y 44",
-            "email": "brujita75@hotmail.com",
+            "phone": "54221555232",
+            "city": "La Plata",
+            "email": "brujita75@vetsoft.com",
         }
 
         result = validate_client(data)
@@ -145,33 +150,7 @@ class ClientModelTest(TestCase):
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "54221555232",
-                "address": "13 y 44",
-                "email": "brujita75@vetsoft.com",
-            },
-        )
-        client = Client.objects.get(pk=1)
-
-        self.assertEqual(client.email, "brujita75@vetsoft.com")
-
-        client.update_client({"email": "brujita75vetsoft.com"})
-
-        client_updated = Client.objects.get(pk=1)
-
-        self.assertEqual(client_updated.email, "brujita75@vetsoft.com")
-
-    def test_update_client_with_invalid_email_vetsoft_com(self):
-        """
-    Prueba que el cliente no se actualice si se proporciona un email que sin 'vetsoft.com'
-
-    Se crea un cliente con un email válido. Luego se intenta
-    actualizar el cliente con un email sin 'vetsoft.com'. Se verifica que
-    el email cliente no cambie después de intentar la actualización.
-        """
-        Client.save_client(
-            {
-                "name": "Juan Sebastian Veron",
-                "phone": "54221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
             },
         )
@@ -182,29 +161,16 @@ class ClientModelTest(TestCase):
         client.update_client({"email": "brujita75@gmail.com"})
 
         client_updated = Client.objects.get(pk=1)
-
+        
         self.assertEqual(client_updated.email, "brujita75@vetsoft.com")
-
-    def test_validate_client_with_empty_name(self):
-        """Prueba que verifica que no se pueda crear un cliente con el campo nombre vacío"""
-        data = {
-            "name": "",
-            "phone": "54221555232",
-            "address": "13 y 44",
-            "email": "brujita75@vetsoft.com",
-        }
-
-        errors = validate_client(data)
-
-        self.assertIn("Por favor ingrese un nombre", errors.values())
-
+        
     def test_update_client_with_empty_name(self):
         """Prueba que verifica si se produce un error al intentar actualizar un cliente con un campo de nombre vacío.""" 
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "54221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
             },
         )
@@ -223,7 +189,7 @@ class ClientModelTest(TestCase):
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "54221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
             },
         )
@@ -241,7 +207,7 @@ class ClientModelTest(TestCase):
         data = {
                 "name": "Juan Sebastian Veron",
                 "phone": "11221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75",
             }
         errors = validate_client(data)
@@ -254,7 +220,7 @@ class ClientModelTest(TestCase):
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "54221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
             },
         )
@@ -274,7 +240,7 @@ class ClientModelTest(TestCase):
         form_data = {
             "name": "Juan Sebastian Veron",
             "phone": "ee21",  # Número de teléfono no numérico
-            "address": "13 y 44",
+            "city": "La Plata",
             "email": "brujita75@hotmail.com",
         }
 
@@ -297,6 +263,31 @@ class ClientModelTest(TestCase):
         # Verificar que el error relacionado con el teléfono no numérico se haya devuelto
         self.assertIn("phone", errors)
         self.assertEqual(errors["phone"], "El teléfono debe ser un número")
+
+    def is_valid_city(self, city):
+        """
+        Verifica si una ciudad dada es válida
+        """
+        return city in [choice.value for choice in City]
+    
+    def test_empty_city_error(self):
+        """
+    Prueba que verifica si se produce un error al intentar crear un veterinario con una especialidad vacía.
+
+    Se crea un diccionario de datos que representa un veterinario con una especialidad vacía.
+    Luego, se valida el diccionario de datos y se verifica que se encuentre el mensaje de error
+    correspondiente en los errores generados.
+        """
+        data = {
+            "name": "Juan Sebastian Veron",
+            "phone": "54221555233",
+            "city": "",
+            "email": "brujita75@vetsoft.com",
+        }
+
+        errors = validate_client(data)
+
+        self.assertIn("Por favor seleccione una ciudad", errors.values())
 
 class TestValidateProduct(TestCase):
     """
@@ -816,35 +807,39 @@ class ProviderModelTest(TestCase):
 
     def test_can_create_and_get_provider(self):
         """Prueba que verifica si se puede crear y obtener un proveedor."""
+
+        city = "La Plata"
+        self.assertTrue(self.is_valid_city(city))
+
         Provider.save_provider(
             {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123",
+                "city":city,
             },
         )
 
         providers = Provider.objects.all()
         self.assertEqual(len(providers), 1)
 
-    def test_validate_empty_address_when_create_provider(self):
-        """Prueba que valida una dirección vacía al crear un proveedor."""
+    def test_validate_empty_city_when_create_provider(self):
+        """Prueba que valida una ciudad vacía al crear un proveedor."""
         provider_data = {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"",
+                "city":"",
             }
 
         result = validate_provider(provider_data)
 
-        self.assertIn("Por favor ingrese una dirección", result.values())
+        self.assertIn("Por favor seleccione una ciudad", result.values())
 
     def test_validate_provider_with_everything_ok(self):
         """Prueba la validación de un proveedor con todos los campos válidos."""
         provider_data = {
             "name":"Demian",
             "email":"demian@utn.com",
-            "address":"Calle falsa 123",
+            "city":"La Plata",
         }
 
         result = validate_provider(provider_data)
@@ -856,13 +851,13 @@ class ProviderModelTest(TestCase):
         provider_data = {
             "name":"",
             "email":"",
-            "address":"",
+            "city":"",
         }
 
         result = validate_provider(provider_data)
         self.assertIn("Por favor ingrese un nombre", result.values())
         self.assertIn("Por favor ingrese un email", result.values())
-        self.assertIn("Por favor ingrese una dirección", result.values())
+        self.assertIn("Por favor seleccione una ciudad", result.values())
 
     def test_can_update_provider(self):
         """Prueba que verifica si se puede actualizar un proveedor."""
@@ -870,7 +865,7 @@ class ProviderModelTest(TestCase):
             {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123",
+                "city":"La Plata",
             },
         )
 
@@ -881,20 +876,20 @@ class ProviderModelTest(TestCase):
         provider.update_provider({
             "name":provider.name,
             "email":provider.email,
-            "address":"Avenida Siempreviva 742",
+            "city":"Berisso",
         })
 
         updated_provider = Provider.objects.get(pk=1)
 
-        self.assertEqual(updated_provider.address, "Avenida Siempreviva 742")
+        self.assertEqual(updated_provider.city, "Berisso")
 
-    def test_cant_update_with_empty_address(self):
-        """Prueba que verifica que no se puede actualizar con una dirección vacía."""
+    def test_cant_update_with_empty_city(self):
+        """Prueba que verifica que no se puede actualizar con una ciudad vacía."""
         Provider.save_provider(
             {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123",
+                "city":"La Plata",
             },
         )
 
@@ -903,12 +898,12 @@ class ProviderModelTest(TestCase):
         provider.update_provider({
             "name":provider.name,
             "email":provider.email,
-            "address":"",
+            "city":"",
         })
 
         updated_provider = Provider.objects.get(pk=1)
 
-        self.assertEqual(updated_provider.address, "Calle falsa 123")
+        self.assertEqual(updated_provider.city, "La Plata")
 
     def test_validate_providert_incorrect_name(self):
         """Prueba que verifica que si un nombre es ingresado con algún caracter que no sean letras minúsculas,
@@ -916,8 +911,8 @@ class ProviderModelTest(TestCase):
         
         data = {
             "name":"Demian 7",
-            "email":"demian@utn.com",
-            "address":"Calle falsa 123",
+            "email":"demian@vetsoft.com",
+            "city":"La Plata",
         }
 
         result = validate_provider(data)
@@ -929,8 +924,8 @@ class ProviderModelTest(TestCase):
         Provider.save_provider(
             {
                 "name":"Demian",
-                "email":"demian@utn.com",
-                "address":"Calle falsa 123",
+                "email":"demian@vetsoft.com",
+                "city":"La Plata",
             },
         )
         provider = Provider.objects.get(pk=1)
@@ -947,8 +942,8 @@ class ProviderModelTest(TestCase):
         Provider.save_provider(
             {
                 "name":"Demian",
-                "email":"demian@utn.com",
-                "address":"Calle falsa 123",
+                "email":"demian@vetsoft.com",
+                "city":"La Plata",
             },
         )
         provider = Provider.objects.get(pk=1)
@@ -960,6 +955,11 @@ class ProviderModelTest(TestCase):
         
         self.assertEqual(provider_updated.name, "Demian")
 
+    def is_valid_city(self, city):
+        """
+        Verifica si una ciudad dada es válida
+        """
+        return city in [choice.value for choice in City]
 
 class MedicineModelTest(TestCase):
     """

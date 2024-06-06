@@ -110,14 +110,14 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         """Verifica si se muestran los datos de los clientes."""
         Client.objects.create(
             name="Juan Sebastian Veron",
-            address="13 y 44",
+            city="La Plata",
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
 
         Client.objects.create(
             name="Guido Carrillo",
-            address="1 y 57",
+            city="Berisso",
             phone="54221232555",
             email="goleador@vetsoft.com",
         )
@@ -127,12 +127,12 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("No existen clientes")).not_to_be_visible()
 
         expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
-        expect(self.page.get_by_text("13 y 44")).to_be_visible()
+        expect(self.page.get_by_text("La Plata")).to_be_visible()
         expect(self.page.get_by_text("54221555232")).to_be_visible()
         expect(self.page.get_by_text("brujita75@vetsoft.com")).to_be_visible()
 
         expect(self.page.get_by_text("Guido Carrillo")).to_be_visible()
-        expect(self.page.get_by_text("1 y 57")).to_be_visible()
+        expect(self.page.get_by_text("Berisso")).to_be_visible()
         expect(self.page.get_by_text("54221232555")).to_be_visible()
         expect(self.page.get_by_text("goleador@vetsoft.com")).to_be_visible()
 
@@ -149,7 +149,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         """Verifica si se muestra la acción para editar un cliente."""
         client = Client.objects.create(
             name="Juan Sebastian Veron",
-            address="13 y 44",
+            city="La Plata",
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
@@ -165,7 +165,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         """Verifica si se muestra la acción para eliminar un cliente."""
         client = Client.objects.create(
             name="Juan Sebastian Veron",
-            address="13 y 44",
+            city="La Plata",
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
@@ -187,7 +187,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         """Verifica si se puede eliminar un cliente."""
         Client.objects.create(
             name="Juan Sebastian Veron",
-            address="13 y 44",
+            city="La Plata",
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
@@ -222,14 +222,14 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
         self.page.get_by_label("Teléfono").fill("54221555232")
         self.page.get_by_label("Email").fill("brujita75@vetsoft.com")
-        self.page.get_by_label("Dirección").fill("13 y 44")
+        self.page.select_option("select[name=city]", value="La Plata")
 
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("Juan Sebastian Veron")).to_be_visible()
         expect(self.page.get_by_text("54221555232")).to_be_visible()
         expect(self.page.get_by_text("brujita75@vetsoft.com")).to_be_visible()
-        expect(self.page.get_by_text("13 y 44")).to_be_visible()
+        expect(self.page.get_by_text("La Plata")).to_be_visible()
 
     def test_should_view_errors_if_form_is_invalid(self):
         """Verifica si se muestran errores si el formulario es inválido."""
@@ -246,7 +246,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Juan Sebastian Veron")
         self.page.get_by_label("Teléfono").fill("54221555232")
         self.page.get_by_label("Email").fill("brujita75")
-        self.page.get_by_label("Dirección").fill("13 y 44")
+        self.page.select_option("select[name=city]", value="La Plata")
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -268,7 +268,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
         self.page.get_by_label("Teléfono").fill("54221555232")
         self.page.get_by_label("Email").fill("brujita75@gmail.com")
-        self.page.get_by_label("Dirección").fill("13 y 44")
+        self.page.select_option("select[name=city]", value="La Plata")
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -280,7 +280,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         """Verifica si se puede editar un cliente."""
         client = Client.objects.create(
             name="Juan Sebastian Veron",
-            address="13 y 44",
+            city="La Plata",
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
@@ -291,17 +291,17 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Guido Carrillo")
         self.page.get_by_label("Teléfono").fill("54221232555")
         self.page.get_by_label("Email").fill("goleador@vetsoft.com")
-        self.page.get_by_label("Dirección").fill("1 y 57")
+        self.page.select_option("select[name=city]", value="Berisso")
 
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("Juan Sebastian Veron")).not_to_be_visible()
-        expect(self.page.get_by_text("13 y 44")).not_to_be_visible()
+        expect(self.page.get_by_text("La Plata")).not_to_be_visible()
         expect(self.page.get_by_text("54221555232")).not_to_be_visible()
         expect(self.page.get_by_text("brujita75@vetsoft.com")).not_to_be_visible()
 
         expect(self.page.get_by_text("Guido Carrillo")).to_be_visible()
-        expect(self.page.get_by_text("1 y 57")).to_be_visible()
+        expect(self.page.get_by_text("Berisso")).to_be_visible()
         expect(self.page.get_by_text("54221232555")).to_be_visible()
         expect(self.page.get_by_text("goleador@vetsoft.com")).to_be_visible()
 
@@ -314,7 +314,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         """Verifica si se aparece un mensaje de error para email en caso de ingresar uno invalido."""
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
+            city="La Plata",
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
@@ -325,7 +325,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Guido Carrillo")
         self.page.get_by_label("Teléfono").fill("54221232555")
         self.page.get_by_label("Email").fill("goleadorgmail.com")
-        self.page.get_by_label("Dirección").fill("1 y 57")
+        self.page.select_option("select[name=city]", value="La Plata")
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -337,7 +337,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         """Verifica si se aparece un mensaje de error para email en caso de ingresar uno sin 'vetsoft.com'"""
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
+            city="La Plata",
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
@@ -348,7 +348,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Guido Carrillo")
         self.page.get_by_label("Teléfono").fill("54221232555")
         self.page.get_by_label("Email").fill("goleador@gmail.com")
-        self.page.get_by_label("Dirección").fill("1 y 57")
+        self.page.select_option("select[name=city]", value="La Plata")
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -365,7 +365,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
         self.page.get_by_label("Teléfono").fill("221555232")
         self.page.get_by_label("Email").fill("brujita75@vetsoft.com")
-        self.page.get_by_label("Dirección").fill("13 y 44")
+        self.page.select_option("select[name=city]", value="La Plata")
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -378,7 +378,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         """Verifica si se muestra un mensaje de error para telefono en caso de ingresar uno que no inicie con 54"""
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
+            city="La Plata",
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
@@ -389,7 +389,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.page.get_by_label("Nombre").fill("Guido Carrillo")
         self.page.get_by_label("Teléfono").fill("221232555")
         self.page.get_by_label("Email").fill("goleador@vetsoft.com")
-        self.page.get_by_label("Dirección").fill("1 y 57")
+        self.page.select_option("select[name=city]", value="La Plata")
 
         self.page.get_by_role("button", name="Guardar").click()
 
@@ -1222,13 +1222,13 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
         Provider.objects.create(
             name = "Bogado",
             email = "demian@utn.com",
-            address = "Calle falsa 123",
+            city = "La Plata",
         )
 
         Provider.objects.create(
             name = "Luciana",
             email = "lu@utn.com",
-            address = "Avenida Siempreviva 742",
+            city = "Berisso",
         )
 
         self.page.goto(f"{self.live_server_url}{reverse('providers_repo')}")
@@ -1237,11 +1237,11 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
 
         expect(self.page.get_by_text("Bogado")).to_be_visible()
         expect(self.page.get_by_text("demian@utn.com")).to_be_visible()
-        expect(self.page.get_by_text("Calle falsa 123")).to_be_visible()
+        expect(self.page.get_by_text("La Plata")).to_be_visible()
 
         expect(self.page.get_by_text("Luciana")).to_be_visible()
         expect(self.page.get_by_text("lu@utn.com")).to_be_visible()
-        expect(self.page.get_by_text("Avenida Siempreviva 742")).to_be_visible()
+        expect(self.page.get_by_text("Berisso")).to_be_visible()
 
     def test_should_show_add_provider_action(self):
         """
@@ -1262,7 +1262,7 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
         provider = Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            address="Calle falsa 123",
+            city="Berisso",
         )
 
         self.page.goto(f"{self.live_server_url}{reverse('providers_repo')}")
@@ -1279,7 +1279,7 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
         provider = Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            address="Calle falsa 123",
+            city="Berisso",
         )
 
         self.page.goto(f"{self.live_server_url}{reverse('providers_repo')}")
@@ -1302,7 +1302,7 @@ class ProvidersRepoTestCase(PlaywrightTestCase):
         Provider.objects.create(
             name="Bogado",
             email="demian@utn.com",
-            address="Calle falsa 123",
+            city="La Plata",
         )
 
         self.page.goto(f"{self.live_server_url}{reverse('providers_repo')}")
@@ -1344,13 +1344,13 @@ class ProviderCreateEditTestCase(PlaywrightTestCase):
 
         self.page.get_by_label("Nombre").fill("Bogado")
         self.page.get_by_label("Email").fill("demian@utn.com")
-        self.page.get_by_label("Dirección").fill("Calle falsa 123")
+        self.page.select_option("select[name=city]", value="Ensenada")
 
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("Bogado")).to_be_visible()
         expect(self.page.get_by_text("demian@utn.com")).to_be_visible()
-        expect(self.page.get_by_text("Calle falsa 123")).to_be_visible()
+        expect(self.page.get_by_text("Ensenada")).to_be_visible()
 
     def test_should_view_errors_if_form_is_invalid(self):
         """
@@ -1370,26 +1370,26 @@ class ProviderCreateEditTestCase(PlaywrightTestCase):
 
         expect(self.page.get_by_text("Por favor ingrese un nombre")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un email")).to_be_visible()
-        expect(self.page.get_by_text("Por favor ingrese una dirección")).to_be_visible()
+        expect(self.page.get_by_text("Por favor seleccione una ciudad")).to_be_visible()
 
         self.page.get_by_label("Nombre").fill("Bogado")
         self.page.get_by_label("Email").fill("demian@utn.com")
-        self.page.get_by_label("Dirección").fill("Calle falsa 123")
+        self.page.select_option("select[name=city]", value="Ensenada")
 
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("Por favor ingrese un nombre")).not_to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un email")).not_to_be_visible()
-        expect(self.page.get_by_text("Por favor ingrese una dirección")).not_to_be_visible()
+        expect(self.page.get_by_text("Por favor seleccione una ciudad")).not_to_be_visible()
 
     def test_should_view_error_if_address_is_empty(self):
         """
         Verifica que se muestre un mensaje de error si el campo de dirección está vacío.
 
         - Accede a la página de creación de proveedores.
-        - Haz clic en el botón "Guardar" sin completar el campo de dirección.
+        - Haz clic en el botón "Guardar" sin completar el campo de ciudad.
         - Verifica que se muestre el mensaje de error correspondiente.
-        - Completa el campo de dirección.
+        - Completa el campo de ciudad.
         - Verifica que el mensaje de error desaparezca.
         """
         self.page.goto(f"{self.live_server_url}{reverse('providers_form')}")
@@ -1401,15 +1401,15 @@ class ProviderCreateEditTestCase(PlaywrightTestCase):
 
         self.page.get_by_role("button", name="Guardar").click()
 
-        expect(self.page.get_by_text("Por favor ingrese una dirección")).to_be_visible()
+        expect(self.page.get_by_text("Por favor seleccione una ciudad")).to_be_visible()
 
         self.page.get_by_label("Nombre").fill("Bogado")
         self.page.get_by_label("Email").fill("demian@utn.com")
-        self.page.get_by_label("Dirección").fill("Calle falsa 123")
+        self.page.select_option("select[name=city]", value="Ensenada")
 
         self.page.get_by_role("button", name="Guardar").click()
 
-        expect(self.page.get_by_text("Por favor ingrese una dirección")).not_to_be_visible()
+        expect(self.page.get_by_text("Por favor seleccione una ciudad")).not_to_be_visible()
 
     def test_should_be_able_to_edit_a_provider(self):
         """
@@ -1417,7 +1417,7 @@ class ProviderCreateEditTestCase(PlaywrightTestCase):
 
         - Crea un proveedor en la base de datos.
         - Accede a la página de edición del proveedor recién creado.
-        - Modifica el nombre, el email y la dirección del proveedor.
+        - Modifica el nombre, el email y la ciudad del proveedor.
         - Haz clic en el botón "Guardar" para guardar los cambios.
         - Verifica que la información anterior del proveedor no sea visible en la página.
         - Verifica que la información actualizada del proveedor sea visible en la página.
@@ -1426,7 +1426,7 @@ class ProviderCreateEditTestCase(PlaywrightTestCase):
         provider = Provider.objects.create(
             name = "Bogado",
             email = "demian@utn.com",
-            address = "Calle falsa 123",
+            city = "Berisso",
         )
 
         path = reverse("providers_edit", kwargs={"id": provider.id})
@@ -1434,17 +1434,17 @@ class ProviderCreateEditTestCase(PlaywrightTestCase):
 
         self.page.get_by_label("Nombre").fill("Luciana")
         self.page.get_by_label("Email").fill("lu@utn.com")
-        self.page.get_by_label("Dirección").fill("Avenida Siempreviva 742")
+        self.page.select_option("select[name=city]", value="Ensenada")
 
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("Bogado")).not_to_be_visible()
         expect(self.page.get_by_text("demian@utn.com")).not_to_be_visible()
-        expect(self.page.get_by_text("Calle falsa 123")).not_to_be_visible()
+        expect(self.page.get_by_text("Berisso")).not_to_be_visible()
 
         expect(self.page.get_by_text("Luciana")).to_be_visible()
         expect(self.page.get_by_text("lu@utn.com")).to_be_visible()
-        expect(self.page.get_by_text("Avenida Siempreviva 742")).to_be_visible()
+        expect(self.page.get_by_text("Ensenada")).to_be_visible()
 
         edit_action = self.page.get_by_role("link", name="Editar")
         expect(edit_action).to_have_attribute(
@@ -1457,10 +1457,10 @@ class ProviderCreateEditTestCase(PlaywrightTestCase):
 
         - Crea un proveedor en la base de datos.
         - Accede a la página de edición del proveedor recién creado.
-        - Deja los campos de nombre y email vacíos y llena el campo de dirección.
+        - Deja los campos vacíos.
         - Haz clic en el botón "Guardar".
-        - Verifica que se muestren los mensajes de error indicando que los campos de nombre y email son obligatorios.
-        - Llena los campos de nombre, email y dirección con valores válidos.
+        - Verifica que se muestren los mensajes de error indicando que los campos de nombre, email y ciudad son obligatorios.
+        - Llena los campos de nombre, email y ciudad con valores válidos.
         - Haz clic en el botón "Guardar".
         - Verifica que los mensajes de error ya no son visibles.
         - Verifica que la información anterior del proveedor no sea visible en la página.
@@ -1470,7 +1470,7 @@ class ProviderCreateEditTestCase(PlaywrightTestCase):
         provider = Provider.objects.create(
             name = "Bogado",
             email = "demian@utn.com",
-            address = "Calle falsa 123",
+            city = "La Plata",
         )
 
         path = reverse("providers_edit", kwargs={"id": provider.id})
@@ -1478,82 +1478,30 @@ class ProviderCreateEditTestCase(PlaywrightTestCase):
 
         self.page.get_by_label("Nombre").fill("")
         self.page.get_by_label("Email").fill("")
-        self.page.get_by_label("Dirección").fill("")
+        
 
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("Por favor ingrese un nombre")).to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un email")).to_be_visible()
-        expect(self.page.get_by_text("Por favor ingrese una dirección")).to_be_visible()
 
         self.page.get_by_label("Nombre").fill("Luciana")
         self.page.get_by_label("Email").fill("lu@utn.com")
-        self.page.get_by_label("Dirección").fill("Avenida Siempreviva 742")
+        self.page.select_option("select[name=city]", value="Berisso")
 
         self.page.get_by_role("button", name="Guardar").click()
 
         expect(self.page.get_by_text("Por favor ingrese un nombre")).not_to_be_visible()
         expect(self.page.get_by_text("Por favor ingrese un email")).not_to_be_visible()
-        expect(self.page.get_by_text("Por favor ingrese una dirección")).not_to_be_visible()
+        expect(self.page.get_by_text("Por favor seleccione una ciudad")).not_to_be_visible()
 
         expect(self.page.get_by_text("Bogado")).not_to_be_visible()
         expect(self.page.get_by_text("demian@utn.com")).not_to_be_visible()
-        expect(self.page.get_by_text("Calle falsa 123")).not_to_be_visible()
+        expect(self.page.get_by_text("La Plata")).not_to_be_visible()
 
         expect(self.page.get_by_text("Luciana")).to_be_visible()
         expect(self.page.get_by_text("lu@utn.com")).to_be_visible()
-        expect(self.page.get_by_text("Avenida Siempreviva 742")).to_be_visible()
-
-        edit_action = self.page.get_by_role("link", name="Editar")
-        expect(edit_action).to_have_attribute(
-            "href", reverse("providers_edit", kwargs={"id":provider.id}),
-        )
-
-    def test_should_not_be_able_to_edit_a_provider_if_address_is_empty(self):
-        """
-        Verifica que no se pueda editar un proveedor si la dirección está vacía.
-
-        - Crea un proveedor en la base de datos.
-        - Accede a la página de edición del proveedor recién creado.
-        - Deja el campo de dirección vacío y llena los campos de nombre y email con los valores del proveedor.
-        - Haz clic en el botón "Guardar".
-        - Verifica que se muestre un mensaje de error indicando que el campo de dirección es obligatorio.
-        - Llena el campo de dirección con un valor válido y haz clic en el botón "Guardar".
-        - Verifica que el mensaje de error ya no sea visible.
-        - Verifica que el nombre, el email y la dirección actualizada del proveedor sean visibles en la página.
-        - Verifica que la dirección anterior del proveedor no sea visible en la página.
-        - Verifica que el enlace de edición del proveedor todavía tenga la URL correcta.
-        """
-        provider = Provider.objects.create(
-            name = "Bogado",
-            email = "demian@utn.com",
-            address = "Calle falsa 123",
-        )
-
-        path = reverse("providers_edit", kwargs={"id": provider.id})
-        self.page.goto(f"{self.live_server_url}{path}")
-
-        self.page.get_by_label("Nombre").fill(provider.name)
-        self.page.get_by_label("Email").fill(provider.email)
-        self.page.get_by_label("Dirección").fill("")
-
-        self.page.get_by_role("button", name="Guardar").click()
-
-        expect(self.page.get_by_text("Por favor ingrese una dirección")).to_be_visible()
-
-        self.page.get_by_label("Nombre").fill(provider.name)
-        self.page.get_by_label("Email").fill(provider.email)
-        self.page.get_by_label("Dirección").fill("Avenida Siempreviva 742")
-
-        self.page.get_by_role("button", name="Guardar").click()
-
-        expect(self.page.get_by_text("Por favor ingrese una dirección")).not_to_be_visible()
-
-        expect(self.page.get_by_text("Bogado")).to_be_visible()
-        expect(self.page.get_by_text("demian@utn.com")).to_be_visible()
-        expect(self.page.get_by_text("Avenida Siempreviva 742")).to_be_visible()
-
-        expect(self.page.get_by_text("Calle falsa 123")).not_to_be_visible()
+        expect(self.page.get_by_text("Berisso")).to_be_visible()
 
         edit_action = self.page.get_by_role("link", name="Editar")
         expect(edit_action).to_have_attribute(

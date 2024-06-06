@@ -3,7 +3,7 @@ import datetime
 from django.shortcuts import reverse
 from django.test import TestCase
 
-from app.models import Client, Medicine, Pet, Product, Provider, Speciality, Vet
+from app.models import City, Client, Medicine, Pet, Product, Provider, Speciality, Vet
 
 
 class HomePageTest(TestCase):
@@ -49,12 +49,16 @@ class ClientsTest(TestCase):
         """
         Prueba si se puede crear un cliente correctamente.
         """
+
+        city = "La Plata"
+        self.assertTrue(self.is_valid_city(city))
+
         response = self.client.post(
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron",
                 "phone": "54221555232",
-                "address": "13 y 44",
+                "city": city,
                 "email": "brujita75@vetsoft.com",
             },
         )
@@ -63,10 +67,16 @@ class ClientsTest(TestCase):
 
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
         self.assertEqual(clients[0].phone, "54221555232")
-        self.assertEqual(clients[0].address, "13 y 44")
+        self.assertEqual(clients[0].city, "La Plata")
         self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
         self.assertRedirects(response, reverse("clients_repo"))
+
+    def is_valid_city(self, city):
+        """
+        Verifica si una ciudad dada es válida
+        """
+        return city in [choice.value for choice in City]
 
     def test_validation_errors_create_client(self):
         """
@@ -97,7 +107,7 @@ class ClientsTest(TestCase):
             data={
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
-                "address": "13 y 44",
+                "city": "La Plata",
                 "email": "brujita75",
             },
         )
@@ -126,7 +136,7 @@ class ClientsTest(TestCase):
         """ 
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
+            city="La Plata",
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
@@ -136,7 +146,7 @@ class ClientsTest(TestCase):
             data={
                 "id": client.id,
                 "name": "Guido Carrillo", 
-                "address":client.address,
+                "city":client.city,
                 "phone":client.phone,
                 "email":client.email,
             },
@@ -148,7 +158,7 @@ class ClientsTest(TestCase):
         editedClient = Client.objects.get(pk=client.id)
         self.assertEqual(editedClient.name, "Guido Carrillo")
         self.assertEqual(editedClient.phone, client.phone)
-        self.assertEqual(editedClient.address, client.address)
+        self.assertEqual(editedClient.city, client.city)
         self.assertEqual(editedClient.email, client.email)
 
     def test_edit_user_with_invalid_email(self):
@@ -157,8 +167,8 @@ class ClientsTest(TestCase):
             """ 
             client = Client.objects.create(
                 name="Juan Sebastián Veron",
-                address="13 y 44",
-                phone="221555232",
+                city="La Plata",
+                phone="54221555232",
                 email="brujita75@vetsoft.com",
             )
 
@@ -167,7 +177,7 @@ class ClientsTest(TestCase):
                 data={
                     "id": client.id,
                     "name": client.name, 
-                    "address":client.address,
+                    "city":client.city,
                     "phone":client.phone,
                     "email":"brujitavetsoft.com",
                 },
@@ -181,8 +191,8 @@ class ClientsTest(TestCase):
         """ 
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
-            phone="221555232",
+            city="La Plata",
+            phone="54221555232",
             email="brujita75@vetsoft.com",
         )
 
@@ -191,7 +201,7 @@ class ClientsTest(TestCase):
             data={
                 "id": client.id,
                 "name": client.name, 
-                "address":client.address,
+                "city":client.city,
                 "phone":client.phone,
                 "email":"brujita@gmail.com",
             },
@@ -207,8 +217,8 @@ class ClientsTest(TestCase):
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron 11",
-                "phone": "221555232",
-                "address": "13 y 44",
+                "phone": "54221555232",
+                "city": "La Plata",
                 "email": "brujita75@vetsoft.com",
             },
         )
@@ -219,8 +229,8 @@ class ClientsTest(TestCase):
         """Prueba que un usuario no pueda editar un cliente con un nombre vacío."""
         client=Client.objects.create(
             name="Juan Sebastian Veron",
-            phone="221555232",
-            address="13 y 44",
+            phone="54221555232",
+            city="La Plata",
             email="brujita75@vetsoft.com",
         )
 
@@ -230,7 +240,7 @@ class ClientsTest(TestCase):
                 "id":client.id,
                 "name":"",
                 "phone":client.phone,
-                "address":client.address,
+                "city":client.city,
                 "email":client.email,
             },
         )
@@ -241,8 +251,8 @@ class ClientsTest(TestCase):
         """Prueba que un usuario no pueda editar un cliente con un nombre incorrecto."""
         client=Client.objects.create(
             name="Juan Sebastian Veron",
-            phone="221555232",
-            address="13 y 44",
+            phone="54221555232",
+            city="La Plata",
             email="brujita75@vetsoft.com",
         )
 
@@ -252,19 +262,20 @@ class ClientsTest(TestCase):
                 "id":client.id,
                 "name":"Juan Sebastian Veron 11",
                 "phone":client.phone,
-                "address":client.address,
+                "city":client.city,
                 "email":client.email,
             },
         )
 
         self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
     def test_user_cant_edit_client_with_incorrect_phone(self):
         """Prueba que un usuario no pueda editar un cliente con un telefono incorrecto."""
         client=Client.objects.create(
             name="Juan Sebastian Veron",
-            phone="1128823465",
-            address="13 y 44",
-            email="brujita75@hotmail.com",
+            phone="5428823465",
+            city="La Plata",
+            email="brujita75@vetsoft.com",
         )
 
         response = self.client.post(
@@ -273,7 +284,7 @@ class ClientsTest(TestCase):
                 "id":client.id,
                 "name":client.name,
                 "phone":'ee3211',
-                "address":client.address,
+                "city":client.city,
                 "email":client.email,
             },
         )
@@ -289,7 +300,7 @@ class ClientsTest(TestCase):
                 data={
                     "name": "Juan Sebastian Veron",
                     "phone": "221555232",
-                    "address": "13 y 44",
+                    "city": "La Plata",
                     "email": "brujita75@vetsoft.com",
                 },
             )
@@ -302,7 +313,7 @@ class ClientsTest(TestCase):
         """ 
         client = Client.objects.create(
             name="Juan Sebastián Veron",
-            address="13 y 44",
+            city="La Plata",
             phone="54221555232",
             email="brujita75@vetsoft.com",
         )
@@ -312,13 +323,50 @@ class ClientsTest(TestCase):
             data={
                 "id": client.id,
                 "name": client.name, 
-                "address":client.address,
+                "city":client.city,
                 "phone":"221555232",
                 "email":client.email,
             },
         )
 
         self.assertContains(response, "El teléfono debe empezar con el prefijo 54")
+
+    def test_create_client_with_valid_city(self):
+        """Prueba que se pueda crear un cliente con una ciudad válida."""
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "name": "Demian Bogado",
+                "phone": "542241555555",
+                "city": "La Plata",
+                "email": "demian@vetsoft.com",
+            },
+        )        
+
+        self.assertEqual(response.status_code, 302)
+
+        self.assertTrue(Client.objects.filter(name="Demian Bogado").exists())
+
+    def test_edit_client_with_empty_city(self):
+        """Prueba que la edición de un cliente con ciudad vacía muestra un error."""
+        client = Client.objects.create(
+                name= "Demian Bogado",
+                phone= "542241555555",
+                city= "La Plata",
+                email= "demian@vetsoft.com",
+        )
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id": client.id,
+                "name": "Demian Bogado",
+                "phone": "542241555555",
+                "city": "",
+                "email": "demian@vetsoft.com",
+            },
+        )
+
+        self.assertContains(response, "Por favor seleccione una ciudad")
 
 class TestIntegration(TestCase):
     """
@@ -960,12 +1008,16 @@ class ProvidersTest(TestCase):
 
     def test_can_create_provider(self):
         """Prueba que se puede crear un proveedor con datos válidos."""
+
+        city = "La Plata"
+        self.assertTrue(self.is_valid_city(city))
+
         response = self.client.post(
             reverse("providers_form"),
             data = {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"Calle falsa 123",
+                "city":city,
             },
         )
 
@@ -974,9 +1026,15 @@ class ProvidersTest(TestCase):
 
         self.assertEqual(providers[0].name, "Demian")
         self.assertEqual(providers[0].email, "demian@utn.com")
-        self.assertEqual(providers[0].address, "Calle falsa 123")
+        self.assertEqual(providers[0].city, "La Plata")
 
         self.assertRedirects(response, reverse("providers_repo"))
+
+    def is_valid_city(self, city):
+        """
+        Verifica si una ciudad dada es válida
+        """
+        return city in [choice.value for choice in City]
 
     def test_validation_errors_when_create_provider(self):
         """Prueba que la validación de errores funciona al crear un proveedor sin datos."""
@@ -987,32 +1045,50 @@ class ProvidersTest(TestCase):
 
         self.assertContains(response, "Por favor ingrese un nombre")
         self.assertContains(response, "Por favor ingrese un email")
-        self.assertContains(response, "Por favor ingrese una dirección")
+        self.assertContains(response, "Por favor seleccione una ciudad")
 
     def test_should_response_with_404_status_if_provider_doesnt_exists(self):
         """Prueba que la vista responda con un estado 404 si el proveedor no existe."""
         response = self.client.get(reverse("providers_edit", kwargs={"id":"742"}))
         self.assertEqual(response.status_code, 404)
 
-    def test_cant_create_provider_with_empty_address(self):
-        """Prueba que no se pueda crear un proveedor con una dirección vacía."""
+    def test_can_create_provider_with_valid_city(self):
+        """Prueba que no se pueda crear un proveedor con una ciudad vacía."""
+        city = "La Plata"
+        self.assertTrue(self.is_valid_city(city))
+        
         response = self.client.post(
             reverse("providers_form"),
             data={
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "address":"",
+                "city":city,
             },
         )
 
-        self.assertContains(response, "Por favor ingrese una dirección")
+        self.assertEqual(response.status_code, 302)
+
+        self.assertTrue(Provider.objects.filter(name="Demian").exists())
+
+    def test_cant_create_provider_with_empty_city(self):
+        """Prueba que no se pueda crear un proveedor con una ciudad vacía."""
+        response = self.client.post(
+            reverse("providers_form"),
+            data={
+                "name":"Demian",
+                "email":"demian@utn.com",
+                "city":"",
+            },
+        )
+
+        self.assertContains(response, "Por favor seleccione una ciudad")
 
     def test_user_can_edit_provider_with_valid_data(self):
         """Prueba que un usuario pueda editar un proveedor con datos válidos."""
         provider = Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            address="Calle falsa 123",
+            city="La Plata",
         )
 
         response = self.client.post(
@@ -1021,7 +1097,7 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":provider.name,
                 "email":provider.email,
-                "address":"Avenida Siempreviva 742",
+                "city":"Berisso",
             },
         )
 
@@ -1032,7 +1108,7 @@ class ProvidersTest(TestCase):
         provider=Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            address="Calle falsa 123",
+            city="La Plata",
         )
 
         response = self.client.post(
@@ -1041,20 +1117,20 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":"",
                 "email":"",
-                "address":"",
+                "city":"",
             },
         )
 
         self.assertContains(response, "Por favor ingrese un nombre")
         self.assertContains(response, "Por favor ingrese un email")
-        self.assertContains(response, "Por favor ingrese una dirección")
+        self.assertContains(response, "Por favor seleccione una ciudad")
 
-    def test_user_cant_edit_provider_with_empty_address(self):
-        """Prueba que un usuario no pueda editar un proveedor con una dirección vacía."""
+    def test_user_cant_edit_provider_with_empty_city(self):
+        """Prueba que un usuario no pueda editar un proveedor con una ciudad vacía."""
         provider=Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            address="Calle falsa 123",
+            city="La Plata",
         )
 
         response = self.client.post(
@@ -1063,11 +1139,11 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":provider.name,
                 "email":provider.email,
-                "address":"",
+                "city":"",
             },
         )
 
-        self.assertContains(response, "Por favor ingrese una dirección")
+        self.assertContains(response, "Por favor seleccione una ciudad")
 
     def test_validation_invalid_name_provider(self):
         """
@@ -1077,8 +1153,8 @@ class ProvidersTest(TestCase):
             reverse("providers_form"),
             data={
                 "name":"Demian 7",
-                "email":"demian@utn.com",
-                "address":"Calle falsa 123",
+                "email":"demian@vetsoft.com",
+                "city":"Berisso",
             },
         )
 
@@ -1088,8 +1164,8 @@ class ProvidersTest(TestCase):
         """Prueba que un usuario no pueda editar un cliente con un nombre incorrecto."""
         provider=Provider.objects.create(
             name="Demian",
-            email="demian@utn.com",
-            address="Calle falsa 123",
+            email="demian@vetsoft.com",
+            city="La Plata",
         )
 
         response = self.client.post(
@@ -1098,7 +1174,7 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":"Demian 7",
                 "email":provider.email,
-                "address":provider.address,
+                "city":provider.city,
             },
         )
 
