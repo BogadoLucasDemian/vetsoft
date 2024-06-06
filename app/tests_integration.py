@@ -1,8 +1,9 @@
-from django.test import TestCase
-from django.shortcuts import reverse
-from app.models import Client, Product, Pet, Vet, Speciality, Provider, Medicine, City
-
 import datetime
+
+from django.shortcuts import reverse
+from django.test import TestCase
+
+from app.models import City, Client, Medicine, Pet, Product, Provider, Speciality, Vet
 
 
 class HomePageTest(TestCase):
@@ -56,18 +57,18 @@ class ClientsTest(TestCase):
             reverse("clients_form"),
             data={
                 "name": "Juan Sebastian Veron",
-                "phone": "221555232",
+                "phone": "54221555232",
                 "city": city,
-                "email": "brujita75@hotmail.com",
+                "email": "brujita75@vetsoft.com",
             },
         )
         clients = Client.objects.all()
         self.assertEqual(len(clients), 1)
 
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
-        self.assertEqual(clients[0].phone, "221555232")
+        self.assertEqual(clients[0].phone, "54221555232")
         self.assertEqual(clients[0].city, "La Plata")
-        self.assertEqual(clients[0].email, "brujita75@hotmail.com")
+        self.assertEqual(clients[0].email, "brujita75@vetsoft.com")
 
         self.assertRedirects(response, reverse("clients_repo"))
 
@@ -113,6 +114,22 @@ class ClientsTest(TestCase):
 
         self.assertContains(response, "Por favor ingrese un email valido")
 
+    def test_validation_invalid_email_vetsoft_com(self):
+            """
+            Prueba si se muestra un error de validación cuando se ingresa un email que no contenga 'vetsoft.com'
+            """
+            response = self.client.post(
+                reverse("clients_form"),
+                data={
+                    "name": "Juan Sebastian Veron",
+                    "phone": "221555232",
+                    "address": "13 y 44",
+                    "email": "brujita75@gmail.com",
+                },
+            )
+
+            self.assertContains(response, "Por favor ingrese un email que incluya &#x27;@vetsoft.com&#x27")
+
     def test_edit_user_with_valid_data(self):
         """
         Prueba si se puede editar un cliente con datos válidos.
@@ -120,8 +137,8 @@ class ClientsTest(TestCase):
         client = Client.objects.create(
             name="Juan Sebastián Veron",
             city="La Plata",
-            phone="221555232",
-            email="brujita75@hotmail.com",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
         )
 
         response = self.client.post(
@@ -144,13 +161,183 @@ class ClientsTest(TestCase):
         self.assertEqual(editedClient.city, client.city)
         self.assertEqual(editedClient.email, client.email)
 
+    def test_edit_user_with_invalid_email(self):
+            """
+            Prueba si se muestra un error de validación cuando se edita un email inválido.
+            """ 
+            client = Client.objects.create(
+                name="Juan Sebastián Veron",
+                city="La Plata",
+                phone="54221555232",
+                email="brujita75@vetsoft.com",
+            )
+
+            response = self.client.post(
+                reverse("clients_form"),
+                data={
+                    "id": client.id,
+                    "name": client.name, 
+                    "city":client.city,
+                    "phone":client.phone,
+                    "email":"brujitavetsoft.com",
+                },
+            )
+
+            self.assertContains(response, "Por favor ingrese un email valido")
+
+    def test_edit_user_with_invalid_email_vetsoft(self):
+        """
+        Prueba si se muestra un error de validación cuando se edita un email que no contenga 'vetsoft.com'
+        """ 
+        client = Client.objects.create(
+            name="Juan Sebastián Veron",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
+        )
+
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id": client.id,
+                "name": client.name, 
+                "city":client.city,
+                "phone":client.phone,
+                "email":"brujita@gmail.com",
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un email que incluya &#x27;@vetsoft.com&#x27")
+    
+    def test_validation_invalid_name_client(self):
+        """
+        Prueba si se muestra un error de validación cuando se ingresa un nombre inválido.
+        """
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "name": "Juan Sebastian Veron 11",
+                "phone": "54221555232",
+                "city": "La Plata",
+                "email": "brujita75@vetsoft.com",
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
+    def test_user_cant_edit_client_with_empty_name(self):
+        """Prueba que un usuario no pueda editar un cliente con un nombre vacío."""
+        client=Client.objects.create(
+            name="Juan Sebastian Veron",
+            phone="54221555232",
+            city="La Plata",
+            email="brujita75@vetsoft.com",
+        )
+
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id":client.id,
+                "name":"",
+                "phone":client.phone,
+                "city":client.city,
+                "email":client.email,
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un nombre")
+
+    def test_user_cant_edit_client_with_incorrect_name(self):
+        """Prueba que un usuario no pueda editar un cliente con un nombre incorrecto."""
+        client=Client.objects.create(
+            name="Juan Sebastian Veron",
+            phone="54221555232",
+            city="La Plata",
+            email="brujita75@vetsoft.com",
+        )
+
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id":client.id,
+                "name":"Juan Sebastian Veron 11",
+                "phone":client.phone,
+                "city":client.city,
+                "email":client.email,
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
+    def test_user_cant_edit_client_with_incorrect_phone(self):
+        """Prueba que un usuario no pueda editar un cliente con un telefono incorrecto."""
+        client=Client.objects.create(
+            name="Juan Sebastian Veron",
+            phone="5428823465",
+            city="La Plata",
+            email="brujita75@vetsoft.com",
+        )
+
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id":client.id,
+                "name":client.name,
+                "phone":'ee3211',
+                "city":client.city,
+                "email":client.email,
+            },
+        )
+
+        self.assertContains(response, "El teléfono debe ser un número")
+    
+    def test_validation_invalid_phone(self):
+            """
+            Prueba si se muestra un error de validación cuando se ingresa un telefono que no inicie el prefijo 54
+            """
+            response = self.client.post(
+                reverse("clients_form"),
+                data={
+                    "name": "Juan Sebastian Veron",
+                    "phone": "221555232",
+                    "city": "La Plata",
+                    "email": "brujita75@vetsoft.com",
+                },
+            )
+
+            self.assertContains(response, "El teléfono debe empezar con el prefijo 54")
+    
+    def test_edit_user_with_invalid_phone(self):
+        """
+        Prueba si se muestra un error de validación cuando se edita el telefono y el mismo no comience con el prefijo 54
+        """ 
+        client = Client.objects.create(
+            name="Juan Sebastián Veron",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
+        )
+
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id": client.id,
+                "name": client.name, 
+                "city":client.city,
+                "phone":"221555232",
+                "email":client.email,
+            },
+        )
+
+        self.assertContains(response, "El teléfono debe empezar con el prefijo 54")
+
     def test_create_client_with_valid_city(self):
         """Prueba que se pueda crear un cliente con una ciudad válida."""
         response = self.client.post(
             reverse("clients_form"),
             data={
                 "name": "Demian Bogado",
-                "phone": "2241555555",
+                "phone": "542241555555",
                 "city": "La Plata",
                 "email": "demian@vetsoft.com",
             },
@@ -164,7 +351,7 @@ class ClientsTest(TestCase):
         """Prueba que la edición de un cliente con ciudad vacía muestra un error."""
         client = Client.objects.create(
                 name= "Demian Bogado",
-                phone= "2241555555",
+                phone= "542241555555",
                 city= "La Plata",
                 email= "demian@vetsoft.com",
         )
@@ -173,7 +360,7 @@ class ClientsTest(TestCase):
             data={
                 "id": client.id,
                 "name": "Demian Bogado",
-                "phone": "2241555555",
+                "phone": "542241555555",
                 "city": "",
                 "email": "demian@vetsoft.com",
             },
@@ -197,7 +384,7 @@ class TestIntegration(TestCase):
                 "type": "antibiotico",
                 "price": "",
             },
-            follow=True  # Permite seguir redirecciones
+            follow=True,  # Permite seguir redirecciones
         )
 
         self.assertContains(response, "Por favor ingrese un precio")
@@ -212,7 +399,7 @@ class TestIntegration(TestCase):
         response = self.client.post(reverse('products_form'), {
             "name": "ampicilina",
             "type": "antibiotico",
-            "price": "10"  # Precio mayor a 0, debería ser válido
+            "price": "10",  # Precio mayor a 0, debería ser válido
         })
 
         # Verifica que la solicitud haya sido exitosa (se espera un redirect)
@@ -232,7 +419,7 @@ class TestIntegration(TestCase):
                 "type": "antibiotico",
                 "price": "",
             },
-            follow=True
+            follow=True,
         )
 
         # Verifica que el formulario devuelva un error de precio vacío
@@ -251,7 +438,7 @@ class TestIntegration(TestCase):
                 "type": "antibiotico",
                 "price": "0",
             },
-            follow=True
+            follow=True,
         )
 
         # Verifica que el formulario devuelva un error de precio cero
@@ -269,7 +456,7 @@ class TestIntegration(TestCase):
                 "name": "ampicilina",
                 "type": "antibiotico",
                 "price": "-10",
-            }
+            },
         )
 
         # self.assertEqual(response.status_code, 400)
@@ -278,6 +465,75 @@ class TestIntegration(TestCase):
         self.assertContains(response, "Por favor ingrese un precio mayor a cero")
         # Verifica que el producto no haya sido creado en la base de datos
         self.assertFalse(Product.objects.filter(name="ampicilina").exists())
+
+    def test_cant_create_product_with_empty_name(self):
+        """Prueba que no se pueda crear un producto con un nombre vacío."""
+        response = self.client.post(
+            reverse("products_form"),
+            data={
+                "name": "",
+                "type": "antibiotico",
+                "price": "10",
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un nombre")
+
+    def test_validation_invalid_name_product(self):
+        """
+        Prueba si se muestra un error de validación cuando se ingresa un nombre inválido.
+        """
+        response = self.client.post(
+            reverse("products_form"),
+            data={
+                "name": "ampicilina 21",
+                "type": "antibiotico",
+                "price": "10",
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
+    def test_user_cant_edit_product_with_empty_name(self):
+        """Prueba que un usuario no pueda editar un producto con un nombre vacío."""
+        product=Product.objects.create(
+            name="ampicilina",
+            type="antibiotico",
+            price="10",
+        )
+
+        response = self.client.post(
+            reverse("products_form"),
+            data={
+                "id":product.id,
+                "name":"",
+                "type":product.type,
+                "price":product.price,
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un nombre")
+
+    def test_user_cant_edit_product_with_incorrect_name(self):
+        """Prueba que un usuario no pueda editar un producto con un nombre incorrecto."""
+        product=Product.objects.create(
+            name="ampicilina",
+            type="antibiotico",
+            price="10",
+        )
+
+        response = self.client.post(
+            reverse("products_form"),
+            data={
+                "id":product.id,
+                "name":"ampicilina 21",
+                "type":product.type,
+                "price":product.price,
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
 
 class PetsTest(TestCase):
     """
@@ -367,7 +623,7 @@ class PetsTest(TestCase):
         pet = Pet.objects.create(
             name="gatito",
             breed="orange",
-            birthday="2024-05-18"
+            birthday="2024-05-18",
         )
         
         response = self.client.post(
@@ -394,7 +650,7 @@ class PetsTest(TestCase):
         pet = Pet.objects.create(
             name="gatito",
             breed="orange",
-            birthday="2024-05-18"
+            birthday="2024-05-18",
         )
         
         response = self.client.post(
@@ -416,7 +672,7 @@ class PetsTest(TestCase):
         pet = Pet.objects.create(
             name="gatito",
             breed="orange",
-            birthday="2024-05-18"
+            birthday="2024-05-18",
         )
         date_now = datetime.date.today().strftime("%Y-%m-%d")
         
@@ -436,7 +692,7 @@ class PetsTest(TestCase):
         pet = Pet.objects.create(
             name="gatito",
             breed="orange",
-            birthday="2024-05-18"
+            birthday="2024-05-18",
         )
         
         date_now = datetime.date.today()
@@ -453,6 +709,41 @@ class PetsTest(TestCase):
         )
         
         self.assertContains(response, "Por favor ingrese una fecha de nacimiento valida y anterior a la de hoy")
+
+    def test_validation_invalid_name_pet(self):
+        """
+        Prueba si se muestra un error de validación cuando se ingresa un nombre inválido.
+        """
+        response = self.client.post(
+            reverse("pets_form"),
+            data={
+                "name": "gatito 10",
+                "breed": "orange",
+                "birthday": "2024-05-18",
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
+    def test_user_cant_edit_pet_with_incorrect_name(self):
+        """Prueba que un usuario no pueda editar una mascota con un nombre incorrecto."""
+        pet=Pet.objects.create(
+            name="gatito",
+            breed="orange",
+            birthday="2024-05-18",
+        )
+
+        response = self.client.post(
+            reverse("pets_form"),
+            data={
+                "id":pet.id,
+                "name":"gatito 10",
+                "breed":pet.breed,
+                "birthday":pet.birthday,
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
 
 
 class VetsTest(TestCase):
@@ -485,7 +776,7 @@ class VetsTest(TestCase):
             data={
                 "name": "Juan Sebastian Veron",
                 "email": "brujita75@hotmail.com",
-                "phone": "221555232",
+                "phone": "54221555232",
                 "speciality": speciality,
             },
         )
@@ -495,7 +786,7 @@ class VetsTest(TestCase):
         
         self.assertEqual(vets[0].name, "Juan Sebastian Veron")
         self.assertEqual(vets[0].email, "brujita75@hotmail.com")
-        self.assertEqual(vets[0].phone, "221555232")
+        self.assertEqual(vets[0].phone, "54221555232")
         self.assertEqual(vets[0].speciality, "Urgencias")
         
         self.assertRedirects(response, reverse("vets_repo"))
@@ -539,7 +830,7 @@ class VetsTest(TestCase):
         """Prueba que un veterinario pueda ser editado con datos válidos."""
         vet = Vet.objects.create(
             name="Juan Sebastián Veron",
-            phone="221555232",
+            phone="54221555232",
             email="brujita75@hotmail.com",
             speciality="Urgencias",
         )
@@ -569,8 +860,8 @@ class VetsTest(TestCase):
         response = self.client.post(reverse("vets_form"), {
             "name": "Juan Sebastian Veron",
             "email": "brujita75@hotmail.com",
-            "phone": "221555232",
-            "speciality": "Urgencias"
+            "phone": "54221555232",
+            "speciality": "Urgencias",
         })
 
         self.assertEqual(response.status_code, 302)
@@ -583,7 +874,7 @@ class VetsTest(TestCase):
             name="Juan Sebastian Veron",
             email= "brujita75@hotmail.com",
             phone= "221555232",
-            speciality= "Urgencias"
+            speciality= "Urgencias",
         )
         response = self.client.post(
             reverse("vets_form"),
@@ -592,12 +883,108 @@ class VetsTest(TestCase):
                 "name": "Juan Sebastian Veron",
                 "email": "brujita75@hotmail.com",
                 "phone": "221555232",
-                "speciality": ""
+                "speciality": "",
             },
         )
 
         self.assertContains(response, "Por favor seleccione una especialidad")
 
+    def test_validation_invalid_name_vet(self):
+        """
+        Prueba si se muestra un error de validación cuando se ingresa un nombre inválido.
+        """
+        response = self.client.post(
+            reverse("vets_form"),
+            data={
+                "name": "Juan Sebastian Veron 11",
+                "email": "brujita75@hotmail.com",
+                "phone": "221555232",
+                "speciality": "Urgencias",
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
+    def test_user_cant_edit_vet_with_empty_name(self):
+        """Prueba que un usuario no pueda editar un veterinario con un nombre vacío."""
+        vet=Vet.objects.create(
+            name="Juan Sebastian Veron",
+            email= "brujita75@hotmail.com",
+            phone= "221555232",
+            speciality= "Urgencias",
+        )
+
+        response = self.client.post(
+            reverse("vets_form"),
+            data={
+                "id":vet.id,
+                "name":"",
+                "email":vet.email,
+                "phone":vet.phone,
+                "speciality":vet.speciality,
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un nombre")
+
+    def test_user_cant_edit_vet_with_incorrect_name(self):
+        """Prueba que un usuario no pueda editar un veterinario con un nombre incorrecto."""
+        vet=Vet.objects.create(
+            name="Juan Sebastian Veron",
+            email= "brujita75@hotmail.com",
+            phone= "221555232",
+            speciality= "Urgencias",
+        )
+
+        response = self.client.post(
+            reverse("vets_form"),
+            data={
+                "id":vet.id,
+                "name":"Juan Sebastian Veron 11",
+                "email":vet.email,
+                "phone":vet.phone,
+                "speciality":vet.speciality,
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
+        
+    def test_validation_invalid_phone(self):
+        """
+        Prueba si se muestra un error de validación cuando se ingresa un telefono inválido.
+        """
+        response = self.client.post(
+            reverse("vets_form"),
+            data={
+                "name": "Juan Sebastian Veron",
+                "email": "brujita75@hotmail.com",
+                "phone": "221555232",
+                "speciality": "Urgencias",
+            },
+        )
+
+        self.assertContains(response, "El teléfono debe empezar con el prefijo 54")
+    
+    def test_edit_user_with_invalid_phone(self):
+        """Prueba que la edición de un veterinario con un telefono invalido muestre un error."""
+        vet = Vet.objects.create(
+            name="Juan Sebastian Veron",
+            email= "brujita75@hotmail.com",
+            phone= "54221555232",
+            speciality= "Urgencias",
+        )
+        response = self.client.post(
+            reverse("vets_form"),
+            data={
+                "id": vet.id,
+                "name": "Juan Sebastian Veron",
+                "email": "brujita75@hotmail.com",
+                "phone": "221555232",
+                "speciality": "Urgencias",
+            },
+        )
+
+        self.assertContains(response, "El teléfono debe empezar con el prefijo 54")
 
 class ProvidersTest(TestCase):
     """
@@ -630,7 +1017,7 @@ class ProvidersTest(TestCase):
             data = {
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "city":city
+                "city":city,
             },
         )
 
@@ -653,7 +1040,7 @@ class ProvidersTest(TestCase):
         """Prueba que la validación de errores funciona al crear un proveedor sin datos."""
         response = self.client.post(
             reverse("providers_form"),
-            data={}
+            data={},
         )
 
         self.assertContains(response, "Por favor ingrese un nombre")
@@ -675,8 +1062,8 @@ class ProvidersTest(TestCase):
             data={
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "city":city
-            }
+                "city":city,
+            },
         )
 
         self.assertEqual(response.status_code, 302)
@@ -690,8 +1077,8 @@ class ProvidersTest(TestCase):
             data={
                 "name":"Demian",
                 "email":"demian@utn.com",
-                "city":""
-            }
+                "city":"",
+            },
         )
 
         self.assertContains(response, "Por favor seleccione una ciudad")
@@ -701,7 +1088,7 @@ class ProvidersTest(TestCase):
         provider = Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            city="La Plata"
+            city="La Plata",
         )
 
         response = self.client.post(
@@ -710,8 +1097,8 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":provider.name,
                 "email":provider.email,
-                "city":"Berisso"
-            }
+                "city":"Berisso",
+            },
         )
 
         self.assertEqual(response.status_code, 302)
@@ -721,7 +1108,7 @@ class ProvidersTest(TestCase):
         provider=Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            city="La Plata"
+            city="La Plata",
         )
 
         response = self.client.post(
@@ -730,8 +1117,8 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":"",
                 "email":"",
-                "city":""
-            }
+                "city":"",
+            },
         )
 
         self.assertContains(response, "Por favor ingrese un nombre")
@@ -743,7 +1130,7 @@ class ProvidersTest(TestCase):
         provider=Provider.objects.create(
             name="Demian",
             email="demian@utn.com",
-            city="La Plata"
+            city="La Plata",
         )
 
         response = self.client.post(
@@ -752,11 +1139,47 @@ class ProvidersTest(TestCase):
                 "id":provider.id,
                 "name":provider.name,
                 "email":provider.email,
-                "city":""
-            }
+                "city":"",
+            },
         )
 
         self.assertContains(response, "Por favor seleccione una ciudad")
+
+    def test_validation_invalid_name_provider(self):
+        """
+        Prueba si se muestra un error de validación cuando se ingresa un nombre inválido.
+        """
+        response = self.client.post(
+            reverse("providers_form"),
+            data={
+                "name":"Demian 7",
+                "email":"demian@vetsoft.com",
+                "city":"Berisso",
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
+    def test_user_cant_edit_provider_with_incorrect_name(self):
+        """Prueba que un usuario no pueda editar un cliente con un nombre incorrecto."""
+        provider=Provider.objects.create(
+            name="Demian",
+            email="demian@vetsoft.com",
+            city="La Plata",
+        )
+
+        response = self.client.post(
+            reverse("providers_form"),
+            data={
+                "id":provider.id,
+                "name":"Demian 7",
+                "email":provider.email,
+                "city":provider.city,
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
 
 class MedicinesTest(TestCase):
     """
@@ -785,7 +1208,7 @@ class MedicinesTest(TestCase):
             data={
                 "name": "Rostrum",
                 "description": "Antibacteriano",
-                "dose": "2"
+                "dose": "2",
             },
         )
         medicines = Medicine.objects.all()
@@ -863,3 +1286,58 @@ class MedicinesTest(TestCase):
         self.assertEqual(editedMedicine.name, medicine.name)
         self.assertEqual(editedMedicine.description, medicine.description)
         self.assertEqual(editedMedicine.dose, 3)
+
+    def test_validation_invalid_name_medicine(self):
+        """
+        Prueba si se muestra un error de validación cuando se ingresa un nombre inválido.
+        """
+        response = self.client.post(
+            reverse("medicine_form"),
+            data={
+                "name": "Rostrum 800",
+                "description": "Antibacteriano",
+                "dose": "2",
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")
+
+    def test_user_cant_edit_medicine_with_empty_name(self):
+        """Prueba que un usuario no pueda editar una medicina con un nombre vacío."""
+        medicine=Medicine.objects.create(
+            name="Rostrum",
+            description="Antibacteriano",
+            dose="2",
+        )
+
+        response = self.client.post(
+            reverse("medicine_form"),
+            data={
+                "id":medicine.id,
+                "name":"",
+                "description":medicine.description,
+                "dose":medicine.dose,
+            },
+        )
+
+        self.assertContains(response, "Por favor, ingrese un nombre de la medicina")
+
+    def test_user_cant_edit_medicine_with_incorrect_name(self):
+        """Prueba que un usuario no pueda editar una medicina con un nombre incorrecto."""
+        medicine=Medicine.objects.create(
+            name="Rostrum",
+            description="Antibacteriano",
+            dose="2",
+        )
+
+        response = self.client.post(
+            reverse("medicine_form"),
+            data={
+                "id":medicine.id,
+                "name":"Rostrum 800",
+                "description":medicine.description,
+                "dose":medicine.dose,
+            },
+        )
+
+        self.assertContains(response, "El nombre debe contener solo letras y espacios")

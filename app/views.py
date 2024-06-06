@@ -1,5 +1,7 @@
-from django.shortcuts import render, redirect, reverse, get_object_or_404
-from .models import Client, Provider, Medicine, Product, Pet, Vet
+from django.shortcuts import get_object_or_404, redirect, render, reverse
+
+from .models import Client, Medicine, Pet, Product, Provider, Vet
+
 
 def home(request):
     
@@ -24,7 +26,6 @@ def clients_form(request, id=None):
     Renderiza el template clients/form.html, el cuál es el formulario de creación/edición de clientes.
     Valida si existe el id entre los parámetros del cuerpo de la request, si existe renderiza el form con datos a editar. De lo contrario renderiza para crear uno nuevo
     """
-    
     if request.method == "POST":
         client_id = request.POST.get("id", "")
         errors = {}
@@ -40,13 +41,12 @@ def clients_form(request, id=None):
             return redirect(reverse("clients_repo"))
 
         return render(
-            request, "clients/form.html", {"errors": errors, "client": request.POST}
+            request, "clients/form.html", {"errors": errors, "client": request.POST},
         )
 
     client = None
     if id is not None:
         client = get_object_or_404(Client, pk=id)
-
     return render(request, "clients/form.html", {"client": client})
 
 def clients_delete(request):
@@ -92,7 +92,7 @@ def providers_form(request, id=None):
             return redirect(reverse("providers_repo"))
 
         return render(
-            request, "providers/form.html", {"errors": errors, "provider": request.POST}
+            request, "providers/form.html", {"errors": errors, "provider": request.POST},
         )
 
     provider = None
@@ -146,7 +146,7 @@ def medicine_form(request, id=None):
             return redirect(reverse("medicine_repo"))
 
         return render(
-            request, "medicine/form.html", {"errors": errors, "medicine": request.POST}
+            request, "medicine/form.html", {"errors": errors, "medicine": request.POST},
         )
 
     medicine = None
@@ -198,7 +198,7 @@ def products_form(request, id=None):
             return redirect(reverse("products_repo"))
 
         return render(
-            request, "products/form.html", {"errors": errors, "product": request.POST}
+            request, "products/form.html", {"errors": errors, "product": request.POST},
         )
     
     product = None
@@ -250,7 +250,7 @@ def pets_form(request, id=None):
             return redirect(reverse("pets_repo"))
 
         return render(
-            request, "pets/form.html", {"errors": errors, "pet": request.POST}
+            request, "pets/form.html", {"errors": errors, "pet": request.POST},
         )
     
     pet = None
@@ -302,7 +302,7 @@ def vets_form(request, id=None):
             return redirect(reverse("vets_repo"))
 
         return render(
-            request, "vets/form.html", {"errors": errors, "vet": request.POST}
+            request, "vets/form.html", {"errors": errors, "vet": request.POST},
         )
 
     vet = None

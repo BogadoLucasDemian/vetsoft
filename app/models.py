@@ -1,6 +1,10 @@
-from django.db import models
-from enum import Enum
 import datetime
+import re
+from enum import Enum
+
+from django.core.exceptions import ValidationError
+from django.db import models
+
 
 def validate_client(data):
     """
@@ -21,14 +25,22 @@ def validate_client(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
+    elif not phone.isdigit():
+        errors["phone"] = "El teléfono debe ser un número"
+    elif not phone.startswith("54"):
+        errors["phone"] = "El teléfono debe empezar con el prefijo 54"
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
     elif email.count("@") == 0:
         errors["email"] = "Por favor ingrese un email valido"
+    elif not email.endswith('@vetsoft.com'):
+        errors["email"] = "Por favor ingrese un email que incluya '@vetsoft.com'"
 
     if city == "":
         errors["city"] = "Por favor seleccione una ciudad"
@@ -53,6 +65,8 @@ def validate_provider(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
@@ -87,6 +101,8 @@ def validate_medicine(data):
 
     if name == "":
         errors["name"] = "Por favor, ingrese un nombre de la medicina"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
     
     if description == "":
         errors["description"] = "Por favor, ingrese una descripcion de la medicina"
@@ -118,6 +134,8 @@ def validate_product(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
     
     if type == "":
         errors["type"] = "Por favor ingrese un tipo"
@@ -153,6 +171,8 @@ def validate_pet(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
     
     if breed == "":
         errors["breed"] = "Por favor ingrese una raza"
@@ -183,6 +203,8 @@ def validate_vet(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not re.match(r"^[A-Za-z\s]+$", name):
+        errors["name"] = "El nombre debe contener solo letras y espacios"
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
@@ -191,7 +213,9 @@ def validate_vet(data):
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
-
+    elif not phone.startswith("54"):
+        errors["phone"] = "El teléfono debe empezar con el prefijo 54"
+    
     if speciality == "":
         errors["speciality"] = "Por favor seleccione una especialidad"
 
@@ -237,6 +261,15 @@ class Client(models.Model):
             str: Nombre del cliente.
         """
         return self.name
+    
+    @classmethod
+    def validate_phone(cls, phone):
+        """
+        Valida que el telefono del cliente sea un numero y si no lo es retorna un mensaje de error
+        """
+        if not phone.isdigit():
+            raise ValidationError("El teléfono debe ser un número")
+    
 
     @classmethod
     def save_client(cls, client_data):
@@ -252,6 +285,14 @@ class Client(models.Model):
         errors = validate_client(client_data)
 
         if len(errors.keys()) > 0:
+            return False, errors
+
+        try:
+            cls.validate_phone(client_data['phone'])
+        except ValidationError as e:
+            errors['phone'] = str(e)
+
+        if errors:
             return False, errors
 
         Client.objects.create(
@@ -276,6 +317,17 @@ class Client(models.Model):
         errors = validate_client(client_data)
 
         if len(errors.keys()) > 0:
+            return False, errors
+
+        try:
+            self.validate_phone(client_data['phone'])
+        except ValidationError as e:
+            if 'phone' in errors:
+                errors['phone'] += f' {str(e)}'
+            else:
+                errors['phone'] = str(e)
+
+        if errors:
             return False, errors
 
         self.name = client_data.get("name", "") or self.name

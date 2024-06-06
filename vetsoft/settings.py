@@ -11,9 +11,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
-from pathlib import Path
-from dotenv import load_dotenv
 import secrets
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -89,7 +90,7 @@ DATABASES = {
     "default": {
         "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.sqlite3"),
         "NAME": os.getenv("DB_NAME", str(BASE_DIR / "db.sqlite3")),
-    }
+    },
 }
 
 
