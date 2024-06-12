@@ -13,6 +13,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 #Copio la aplicación a la imagen de Docker 
 COPY . . 
 
+#Actualizo la base de datos corriendo las migraciones
+RUN python3 manage.py migrate
+
 #Expongo el puerto 8000 para levantar el servidor
 EXPOSE 8000
 
