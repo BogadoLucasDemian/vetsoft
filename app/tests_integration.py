@@ -130,6 +130,54 @@ class ClientsTest(TestCase):
 
             self.assertContains(response, "Por favor ingrese un email que incluya &#x27;@vetsoft.com&#x27")
 
+    def test_validation_invalid_email_only_vetsoft_com(self):
+            """
+            Prueba si se muestra un error de validación cuando se ingresa un email con solo 'vetsoft.com'
+            """
+            response = self.client.post(
+                reverse("clients_form"),
+                data={
+                    "name": "Juan Sebastian Veron",
+                    "phone": "221555232",
+                    "address": "13 y 44",
+                    "email": "@vetsoft.com",
+                },
+            )
+
+            self.assertContains(response, "Por favor ingrese un email válido, no solo &#x27;@vetsoft.com&#x27")
+
+    def test_validation_invalid_email_with_more_than_one_at_sign(self):
+            """
+            Prueba si se muestra un error de validación cuando se ingresa un email que mas de un @
+            """
+            response = self.client.post(
+                reverse("clients_form"),
+                data={
+                    "name": "Juan Sebastian Veron",
+                    "phone": "221555232",
+                    "address": "13 y 44",
+                    "email": "brujita@75@gmail.com",
+                },
+            )
+
+            self.assertContains(response, "Por favor ingrese un email valido")
+
+    def test_validation_invalid_email_with_white_space(self):
+            """
+            Prueba si se muestra un error de validación cuando se ingresa un email con espacios en blanco
+            """
+            response = self.client.post(
+                reverse("clients_form"),
+                data={
+                    "name": "Juan Sebastian Veron",
+                    "phone": "221555232",
+                    "address": "13 y 44",
+                    "email": "brujita 75@gmail.com",
+                },
+            )
+
+            self.assertContains(response, "Por favor ingrese un email sin espacios en blanco")
+
     def test_edit_user_with_valid_data(self):
         """
         Prueba si se puede editar un cliente con datos válidos.
@@ -208,6 +256,78 @@ class ClientsTest(TestCase):
         )
 
         self.assertContains(response, "Por favor ingrese un email que incluya &#x27;@vetsoft.com&#x27")
+    
+    def test_edit_user_with_invalid_email_only_vetsoft_com(self):
+        """
+        Prueba si se muestra un error de validación cuando se edita un email con solo 'vetsoft.com'
+        """ 
+        client = Client.objects.create(
+            name="Juan Sebastián Veron",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
+        )
+
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id": client.id,
+                "name": client.name, 
+                "city":client.city,
+                "phone":client.phone,
+                "email":"@vetsoft.com",
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un email válido, no solo &#x27;@vetsoft.com&#x27")
+
+    def test_edit_user_with_invalid_email_more_than_one_at_sign(self):
+        """
+        Prueba si se muestra un error de validación cuando se edita un email con mas de un @
+        """ 
+        client = Client.objects.create(
+            name="Juan Sebastián Veron",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
+        )
+
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id": client.id,
+                "name": client.name, 
+                "city":client.city,
+                "phone":client.phone,
+                "email":"brujita@75@vetsoft.com",
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un email valido")
+
+    def test_edit_user_with_invalid_email_with_white_spaces(self):
+        """
+        Prueba si se muestra un error de validación cuando se edita un email con espacios en blanco
+        """ 
+        client = Client.objects.create(
+            name="Juan Sebastián Veron",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
+        )
+
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "id": client.id,
+                "name": client.name, 
+                "city":client.city,
+                "phone":client.phone,
+                "email":"brujita 75@gmail.com",
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un email sin espacios en blanco")
     
     def test_validation_invalid_name_client(self):
         """
