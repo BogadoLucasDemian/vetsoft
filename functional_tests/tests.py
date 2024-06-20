@@ -276,6 +276,57 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
             self.page.get_by_text("Por favor ingrese un email que incluya '@vetsoft.com'"),
         ).to_be_visible()
 
+    def test_should_view_errors_if_email_is_invalid_only_vetsoft_com(self):
+        """Verifica si se muestran errores si el email contiene solamente 'vetsoft.com'."""
+        self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Teléfono").fill("54221555232")
+        self.page.get_by_label("Email").fill("@vetsoft.com")
+        self.page.select_option("select[name=city]", value="La Plata")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(
+            self.page.get_by_text("Por favor ingrese un email válido, no solo '@vetsoft.com'"),
+        ).to_be_visible()
+
+    def test_should_view_errors_if_email_is_invalid_more_than_one_at_sign(self):
+        """Verifica si se muestran errores si el email contiene mas de un @"""
+        self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Teléfono").fill("54221555232")
+        self.page.get_by_label("Email").fill("brujita@75@gmail.com")
+        self.page.select_option("select[name=city]", value="La Plata")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(
+            self.page.get_by_text("Por favor ingrese un email valido"),
+        ).to_be_visible()
+
+    def test_should_view_errors_if_email_is_invalid_vetsoft_com_white_spaces(self):
+        """Verifica si se muestran errores si el email contiene espacios en blanco"""
+        self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Teléfono").fill("54221555232")
+        self.page.get_by_label("Email").fill("brujita 75@gmail.com")
+        self.page.select_option("select[name=city]", value="La Plata")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(
+            self.page.get_by_text("Por favor ingrese un email sin espacios en blanco"),
+        ).to_be_visible()
+
     def test_should_be_able_to_edit_a_client(self):
         """Verifica si se puede editar un cliente."""
         client = Client.objects.create(
@@ -331,6 +382,75 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
         expect(
             self.page.get_by_text("Por favor ingrese un email valido"),
+        ).to_be_visible()
+
+    def test_should_not_be_able_to_edit_a_client_if_invalid_email_only_vetsoft_com(self):
+        """Verifica si se aparece un mensaje de error para email en caso de ingresar solamente @vetsoft.com"""
+        client = Client.objects.create(
+            name="Juan Sebastián Veron",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
+        )
+
+        path = reverse("clients_edit", kwargs={"id": client.id})
+        self.page.goto(f"{self.live_server_url}{path}")
+
+        self.page.get_by_label("Nombre").fill("Guido Carrillo")
+        self.page.get_by_label("Teléfono").fill("54221232555")
+        self.page.get_by_label("Email").fill("@vetsoft.com")
+        self.page.select_option("select[name=city]", value="La Plata")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(
+            self.page.get_by_text("Por favor ingrese un email válido, no solo '@vetsoft.com'"),
+        ).to_be_visible()
+
+    def test_should_not_be_able_to_edit_a_client_if_invalid_email_more_than_one_at_sign(self):
+        """Verifica si se aparece un mensaje de error para email en caso de ingresar mas de un @"""
+        client = Client.objects.create(
+            name="Juan Sebastián Veron",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
+        )
+
+        path = reverse("clients_edit", kwargs={"id": client.id})
+        self.page.goto(f"{self.live_server_url}{path}")
+
+        self.page.get_by_label("Nombre").fill("Guido Carrillo")
+        self.page.get_by_label("Teléfono").fill("54221232555")
+        self.page.get_by_label("Email").fill("brujita@75@vetsoft.com")
+        self.page.select_option("select[name=city]", value="La Plata")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(
+            self.page.get_by_text("Por favor ingrese un email valido"),
+        ).to_be_visible()
+
+    def test_should_not_be_able_to_edit_a_client_if_invalid_email_with_white_spaces(self):
+        """Verifica si se aparece un mensaje de error para email en caso de ingresar espacios en blanco"""
+        client = Client.objects.create(
+            name="Juan Sebastián Veron",
+            city="La Plata",
+            phone="54221555232",
+            email="brujita75@vetsoft.com",
+        )
+
+        path = reverse("clients_edit", kwargs={"id": client.id})
+        self.page.goto(f"{self.live_server_url}{path}")
+
+        self.page.get_by_label("Nombre").fill("Guido Carrillo")
+        self.page.get_by_label("Teléfono").fill("54221232555")
+        self.page.get_by_label("Email").fill("brujita 75@vetsoft.com")
+        self.page.select_option("select[name=city]", value="La Plata")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(
+            self.page.get_by_text("Por favor ingrese un email sin espacios en blanco"),
         ).to_be_visible()
 
     def test_should_not_be_able_to_edit_a_client_if_invalid_email_vetsoft_com(self):

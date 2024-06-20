@@ -71,6 +71,42 @@ class ClientModelTest(TestCase):
         self.assertIn("email", errors)
         self.assertEqual(errors["email"], "Por favor ingrese un email que incluya '@vetsoft.com'")
 
+    def test_create_client_with_invalid_email_only_vetsoft_com(self):
+        """Intenta crear un cliente con solamente '@vetsoft.com' en el mail"""
+        data = {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "city": "La Plata",
+                "email": "@vetsoft.com",
+            }
+        errors = validate_client(data)
+        self.assertIn("email", errors)
+        self.assertEqual(errors["email"], "Por favor ingrese un email válido, no solo '@vetsoft.com'")
+
+    def test_create_client_with_invalid_email_more_than_one_at_sign(self):
+        """Intenta crear un cliente con mas de un @ en el mail"""
+        data = {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "city": "La Plata",
+                "email": "brujita@veron@vetsoft.com",
+            }
+        errors = validate_client(data)
+        self.assertIn("email", errors)
+        self.assertEqual(errors["email"], "Por favor ingrese un email valido")
+
+    def test_create_client_with_invalid_email_white_space(self):
+        """Intenta crear un cliente con espacios en blanco en el mail"""
+        data = {
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "city": "La Plata",
+                "email": "ro tantos@vetsoft.com",
+            }
+        errors = validate_client(data)
+        self.assertIn("email", errors)
+        self.assertEqual(errors["email"], "Por favor ingrese un email sin espacios en blanco")
+
     def test_can_update_client(self):
         """Prueba que se pueda actualizar la información de un cliente correctamente."""
         Client.save_client(
@@ -163,7 +199,67 @@ class ClientModelTest(TestCase):
         client_updated = Client.objects.get(pk=1)
         
         self.assertEqual(client_updated.email, "brujita75@vetsoft.com")
+
+    def test_edit_client_with_invalid_email_only_vetsoft_com(self):
+        """Intenta editar un cliente con solamente '@vetsoft.com' en el mail"""
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "54221555232",
+                "city": "La Plata",
+                "email": "brujita75@vetsoft.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+
+        self.assertEqual(client.email, "brujita75@vetsoft.com")
+
+        client.update_client({"email": "@vetsoft.com"})
+
+        client_updated = Client.objects.get(pk=1)
         
+        self.assertEqual(client_updated.email, "brujita75@vetsoft.com")
+
+    def test_edit_client_with_invalid_email_more_than_one_at_sign(self):
+        """Intenta editar un cliente con mas de un @ en el mail"""
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "54221555232",
+                "city": "La Plata",
+                "email": "brujita75@vetsoft.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+
+        self.assertEqual(client.email, "brujita75@vetsoft.com")
+
+        client.update_client({"email": "brujita@75@vetsoft.com"})
+
+        client_updated = Client.objects.get(pk=1)
+        
+        self.assertEqual(client_updated.email, "brujita75@vetsoft.com")
+
+    def test_edit_client_with_invalid_email_white_space(self):
+        """Intenta editar un cliente con espacios en blanco en el mail"""
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "54221555232",
+                "city": "La Plata",
+                "email": "brujita75@vetsoft.com",
+            },
+        )
+        client = Client.objects.get(pk=1)
+
+        self.assertEqual(client.email, "brujita75@vetsoft.com")
+
+        client.update_client({"email": "brujita 75@vetsoft.com"})
+
+        client_updated = Client.objects.get(pk=1)
+        
+        self.assertEqual(client_updated.email, "brujita75@vetsoft.com")
+
     def test_update_client_with_empty_name(self):
         """Prueba que verifica si se produce un error al intentar actualizar un cliente con un campo de nombre vacío.""" 
         Client.save_client(
