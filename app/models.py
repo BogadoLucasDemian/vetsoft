@@ -34,7 +34,6 @@ def validate_client(data):
         errors["phone"] = "El teléfono debe ser un número"
     elif not phone.startswith("54"):
         errors["phone"] = "El teléfono debe empezar con el prefijo 54"
-
     if email == "":
         errors["email"] = "Por favor ingrese un email"
     elif email.count(" ") > 0:
@@ -253,7 +252,7 @@ class Client(models.Model):
     """
 
     name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=15)
+    phone = models.IntegerField()
     email = models.EmailField()
     city = models.CharField(max_length=50, choices=City.choices(), default=City.LaPlata)
 
