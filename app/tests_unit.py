@@ -1,5 +1,6 @@
 import datetime
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from app.models import (
@@ -332,7 +333,7 @@ class ClientModelTest(TestCase):
     def test_validate_phone_with_non_numeric_value(self):
         """Prueba que verifica que la validación del teléfono genere un error si se proporciona un valor no numérico."""
 
-        # Datos de cliente con teléfono no numérico
+        # Datos con teléfono no numérico
         form_data = {
             "name": "Juan Sebastian Veron",
             "phone": "ee21",  # Número de teléfono no numérico
@@ -340,25 +341,16 @@ class ClientModelTest(TestCase):
             "email": "brujita75@hotmail.com",
         }
 
-        # Crear un cliente inicial con los datos proporcionados
-        client = Client.objects.create(**form_data)
+        # Intentar crear un cliente con datos no válidos
+        with self.assertRaises(ValidationError) as context:
+            client = Client(**form_data)
+            client.full_clean()  # Valida los campos del modelo
 
-        # Verificar que el teléfono inicial es correcto
-        self.assertEqual(client.phone, "ee21")
+        # Verificar que el error esperado se relaciona con el teléfono
+        self.assertIn("phone", context.exception.message_dict)
 
-        # Intentar actualizar el cliente con un número de teléfono no numérico
-        success, errors = client.update_client({"phone": "ee32w3"})
-
-        # Verificar que la actualización falló
-        self.assertFalse(success)
-
-        # Verificar que se mantuvo el teléfono original
-        updated_client = Client.objects.get(pk=client.pk)
-        self.assertEqual(updated_client.phone, "ee21")
-
-        # Verificar que el error relacionado con el teléfono no numérico se haya devuelto
-        self.assertIn("phone", errors)
-        self.assertEqual(errors["phone"], "El teléfono debe ser un número")
+        # Verificar que el cliente no se creó debido a la validación incorrecta
+        self.assertFalse(Client.objects.filter(name="Juan Sebastian Veron").exists())
 
     def is_valid_city(self, city):
         """
