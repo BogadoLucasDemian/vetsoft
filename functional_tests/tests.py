@@ -541,6 +541,20 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         self.assertTrue(self.validate_phone_number(valid_phone))
         self.assertFalse(self.validate_phone_number(invalid_phone))
 
+    def test_should_not_allow_non_numeric_characters_in_phone_field(self):
+        """
+        Verifica que se muestren errores si el teléfono no es numérico.
+        """
+        Client.objects.create(
+            name="Juan Sebastián Veron",
+            city="La Plata",
+            phone=54221555232,
+            email="brujita75@hotmail.com",
+        )
+        self.page.goto(f"{self.live_server_url}{reverse('clients_repo')}")
+        self.page.get_by_role("link", name="Editar").click()
+        self.page.get_by_label("Teléfono").fill("ee353ff354")
+        self.page.get_by_role("button", name="Guardar").click()
 
 class ProductCreateEditTestCase(PlaywrightTestCase):
     """
