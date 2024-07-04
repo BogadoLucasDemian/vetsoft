@@ -53,21 +53,17 @@
                 </div>
                 <div>
                     <label for="phone" class="form-label">Teléfono</label>
-                    {% if vet.phone and not errors.phone %}
                     <input type="text"
                         id="phone"
                         name="phone"
                         class="form-control"
+                        pattern="^54\d+(.\d+)?$"
+                        step="1"
+                        oninput="this.value = this.value.replace(/[^\d]/g, '')"
                         value="{{vet.phone}}"
+                        title="El telefono debe ser un numero y comenzar con 54"
+                        inputmode="numeric"
                         required/>
-                    {% else %}
-                    <input type="text"
-                        id="phone"
-                        name="phone"
-                        class="form-control"
-                        value=""
-                        required/>
-                    {% endif %}
 
                     {% if errors.phone %}
                         <div class="invalid-feedback">
